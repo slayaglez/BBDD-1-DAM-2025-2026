@@ -1,0 +1,44 @@
+=========CONSULTAS=============
+
+Pagos realizados por clientes activos cuyo email termine en .com y su apellido empiece por Y
+
+SELECT payment.amount, customer.first_name, customer.last_name, customer.email
+FROM customer
+INNER JOIN payment
+USING(customer_id)
+WHERE active = 1
+AND email LIKE '%.org'
+AND last_name LIKE 'Y%';
+
+Contar todas las terminaciones distintas de email
+
+SELECT COUNT(DISTINCT email) FROM customer;
+
+El nombre del manager que trabaja en las tiendas que tengan películas cuyos actores se llamen Ann
+
+SELECT staff.first_name, film.title
+FROM store
+INNER JOIN staff USING(store_id)
+INNER JOIN rental USING(staff_id)
+INNER JOIN inventory USING(inventory_id)
+INNER JOIN film USING(film_id)
+INNER JOIN film_actor USING(film_id)
+INNER JOIN actor USING(actor_id)
+WHERE actor.first_name LIKE 'Ann'
+AND store.manager_staff_id = staff.staff_id;
+
+Obtenga los nombres de todos los artistas que estan en la base de datos pero a pares entre todos ellos
+
+SELECT a1.first_name || ' feat ' || a2.first_name AS colabo
+FROM artist AS a1
+CROSS JOIN artist AS a2;
+
+Obtener todos los nombres que tengan una longitud superior a siete caracteres de clientes y actores
+
+SELECT first_name 
+FROM actor
+WHERE LENGTH(first_name) > 7 
+UNION
+SELECT first_name 
+FROM customer
+WHERE LENGTH(first_name) > 7;
