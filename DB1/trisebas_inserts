@@ -50,13 +50,9 @@ VALUES
 ('JuanPabloxx', 'skillstopcanarias@ganador.es'),
 ('Somilinator', 'xxsomilxx@sample.com');
 
-INSERT INTO groups(name, purpose, debt)
+INSERT INTO groups(name, purpose)
 VALUES
-('Supernenes', 'Botellon', '30');
-
-INSERT INTO groups(name, purpose, debt)
-VALUES
-('Supernenes', 'Botellon', '30');
+('Supernenes', 'Botellon');
 
 
 INSERT INTO expenses (amount, description, currency, created_by)
