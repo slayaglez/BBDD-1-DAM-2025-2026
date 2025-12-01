@@ -37,7 +37,7 @@ VALUES
 
 INSERT INTO blog(title, id_user)
 VALUES
-('El dia que me hice gay', 2),
+('El dia que me hice skater', 2),
 ('Como escaparse de clase', 3);
 
 ========TRISEBAS===========
