@@ -13,12 +13,12 @@ Para crear nuestro contenedor Docker con una imagen base Postgres, donde:
 Tras esto usamos `docker ps` para comprobar que el contenedor se está ejecutando y en caso de que así sea usaremos:
 `docker exec -it spyproduct-db psql -U postgres -d spyproduct`
 Donde **"-U postgres"** será el usuario (como no lo especificamos antes, por defecto es postgres) y **"-d spyproduct"** será nuestra base de datos. Esto nos dejará con la siguiente terminal:
-<img src="../img/cap1.png">
+<img src="./img/cap1.png">
 
 ### Paso 2
 Saldremos del contenedor con `\q` y activaremos los volúmenes para que nuestro trabajo dentro de la base de datos se guarde y no se reinicie cada vez que paremos e iniciemos el contenedor. Para ello usaremos el siguiente comando: 
 `docker volume create postgres-data` y para comprobar que haya funcionado usaremos `docker volume inspect postgres-data` Nuestra consola debe imprimir información de nuestro volumen, parecida a esta:
-<img src="../img/cap2.png">
+<img src="./img/cap2.png">
 
 Ahora podemos volver a abrir nuestro contenedor con `docker exec -it spyproduct-db psql -U postgres -d spyproduct` y empezar a crear las tablas e insertar los datos de las mismas.
 
