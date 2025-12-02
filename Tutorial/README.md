@@ -123,3 +123,5 @@ VALUES
 ```
 Con esto ya tendremos nuestra base de datos, preparada para su uso. Una vez terminemos de usarla saldremos con `\q` y pararemos el contenedor Docker con `docker stop spyproduct-db` para encenderlo de nuevo usaremos `docker start spyproduct-db` y ejecutaremos el contenedor para acceder a la base de datos con `docker exec -it spyproduct-db psql -U postgres -d spyproduct` ya mencionado anteriormente.
 
+Por último, para sacar copias de seguridad usaremos la siguiente nomenclatura `pg_dump -U tu_usuario -d tu_base_de_datos > archivo_de_respaldo.sql`.
+
