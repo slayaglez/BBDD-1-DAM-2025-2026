@@ -1,4 +1,4 @@
-# slayacount-db
+# Preparando nuestro entorno
 ## Guía paso a paso
 
 ### Paso 1
