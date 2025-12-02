@@ -78,9 +78,10 @@ VALUES
 (5, 1, 21.00);
 
 
-========CONSULTAS===========
+==========CONSULTAS============
 Buscamos el id del producto:
 SELECT id_product, name FROM product WHERE name = 'monitor';
+
 Calcular la media de la columna:
 SELECT AVG(price_stamp) FROM history WHERE history.id_product_fk = 1;
 
