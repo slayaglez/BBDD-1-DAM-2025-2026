@@ -6,7 +6,7 @@ En esta guía se verá cómo crear un contenedor Docker, con una imagen base de 
 
 ### Paso 1
 Al preparar nuestro entorno, primero debemos tener descargado Docker en nuestra máquina. Empezaremos usando los siguientes comandos:
-`docker run --name spyproduct-db   -e POSTGRES_PASSWORD=1234   -v postgres-data:/var/lib/postgresql/data   -d postgres`
+`docker run --name miblog-db   -e POSTGRES_PASSWORD=1234   -v postgres-data:/var/lib/postgresql/data   -d postgres`
 Para crear nuestro contenedor Docker con una imagen base Postgres, donde:
 
 - **"--name"** será el nombre del contenedor
@@ -16,8 +16,8 @@ Para crear nuestro contenedor Docker con una imagen base Postgres, donde:
 
 Tras esto usamos `docker ps` para comprobar que el contenedor se está ejecutando y en caso de que así sea usaremos:
 
-`docker exec -it spyproduct-db psql -U postgres -d spyproduct`
-Donde **"-U postgres"** será el usuario (como no lo especificamos antes, por defecto es postgres) y **"-d spyproduct"** será nuestra base de datos. Esto nos dejará con la siguiente terminal:
+`docker exec -it miblog-db psql -U postgres -d misuperblog`
+Donde **"-U postgres"** será el usuario (como no lo especificamos antes, por defecto es postgres) y **"-d misuperblog"** será nuestra base de datos. Esto nos dejará con la siguiente terminal:
 <img src="./img/cap1.png">
 
 ### Paso 2
@@ -25,10 +25,10 @@ Saldremos del contenedor con `\q` y activaremos los volúmenes para que nuestro 
 `docker volume create postgres-data` y para comprobar que haya funcionado usaremos `docker volume inspect postgres-data` Nuestra consola debe imprimir información de nuestro volumen, parecida a esta:
 <img src="./img/cap2.png">
 
-Ahora podemos volver a abrir nuestro contenedor con `docker exec -it spyproduct-db psql -U postgres -d spyproduct` y empezar a crear las tablas e insertar los datos de las mismas.
+Ahora podemos volver a abrir nuestro contenedor con `docker exec -it miblog-db psql -U postgres -d misuperblog` y empezar a crear las tablas e insertar los datos de las mismas.
 
 ### Paso 3
-Para la creación de tablas copiaremos las siguientes sentencias en postgres en nuestra terminal `spyproduct=# `
+Para la creación de tablas copiaremos las siguientes sentencias en postgres en nuestra terminal `misuperblog=# `
 
 ```
 CREATE TABLE user(
@@ -71,7 +71,7 @@ VALUES
 ('Mi vida en Aragua', 8);
 
 ```
-Con esto ya tendremos nuestra base de datos, preparada para su uso. Una vez terminemos de usarla saldremos con `\q` y pararemos el contenedor Docker con `docker stop spyproduct-db` para encenderlo de nuevo usaremos `docker start spyproduct-db` y ejecutaremos el contenedor para acceder a la base de datos con `docker exec -it spyproduct-db psql -U postgres -d spyproduct` ya mencionado anteriormente.
+Con esto ya tendremos nuestra base de datos, preparada para su uso. Una vez terminemos de usarla saldremos con `\q` y pararemos el contenedor Docker con `docker stop miblog-db` para encenderlo de nuevo usaremos `docker start miblog-db` y ejecutaremos el contenedor para acceder a la base de datos con `docker exec -it miblog-db psql -U postgres -d misuperblog` ya mencionado anteriormente.
 
-Por último, para sacar copias de seguridad usaremos la siguiente sentencia `pg_dump -U tu_usuario -d tu_base_de_datos > archivo_de_respaldo.sql`.
+Por último, para sacar copias de seguridad usaremos la siguiente sentencia `pg_dump -U postgres -d misuperblog > archivo_de_respaldo.sql`.
 
