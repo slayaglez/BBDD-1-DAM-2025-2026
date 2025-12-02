@@ -12,6 +12,7 @@ Para crear nuestro contenedor Docker con una imagen base Postgres, donde:
 - **"-d postgres"** será la imagen base de nuestro contenedor
 
 Tras esto usamos `docker ps` para comprobar que el contenedor se está ejecutando y en caso de que así sea usaremos:
+
 `docker exec -it spyproduct-db psql -U postgres -d spyproduct`
 Donde **"-U postgres"** será el usuario (como no lo especificamos antes, por defecto es postgres) y **"-d spyproduct"** será nuestra base de datos. Esto nos dejará con la siguiente terminal:
 <img src="./img/cap1.png">
