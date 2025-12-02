@@ -1,0 +1,52 @@
+======INSERTAR DATOS========
+
+INSERT INTO users(name, email)
+VALUES
+('Johan', 'johanjohan@sample.com'),
+('JuanPablo', 'skillstopcanarias@ganador.es'),
+('Somil', 'xxsomilxx@sample.com');
+
+INSERT INTO groups(name, purpose)
+VALUES
+('Supernenes', 'Verano');
+
+
+INSERT INTO expenses (amount, description, currency, created_by)
+VALUES
+(34.90, 'cita romantica', 'francos suizos', 1);
+
+
+INSERT INTO history (id_users_fk, id_groups_fk, id_expenses_fk, user_balance)
+VALUES
+(1, 1, 3, 17.45),
+(2, 1, 3, -17.45);
+
+INSERT INTO expenses (amount, description, currency, created_by)
+VALUES
+(60.90, 'infidelidad en la bolera', 'francos suizos', 2);
+
+
+INSERT INTO history (id_users_fk, id_groups_fk, id_expenses_fk, user_balance)
+VALUES
+(3, 1, 2, -30.45),
+(2, 1, 2, 30.45);
+
+INSERT INTO users_groups (id_users_fk, id_groups_fk)
+VALUES
+(1, 1),
+(2, 1),
+(3, 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
