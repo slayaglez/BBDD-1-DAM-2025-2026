@@ -2,6 +2,8 @@
 ## Guía paso a paso
 En esta guía se verá cómo crear un contenedor Docker, con una imagen base de PostgreSQL y cómo guardar las bases de datos que creemos con volúmenes para que no se pierdan una vez se cierre el contenedor. Esta guía **no** va sobre PostgreSQL sino sobre Docker.
 
+<br>
+
 ### Paso 1
 Al preparar nuestro entorno, primero debemos tener descargado Docker en nuestra máquina. Empezaremos usando los siguientes comandos:
 `docker run --name spyproduct-db   -e POSTGRES_PASSWORD=1234   -v postgres-data:/var/lib/postgresql/data   -d postgres`
