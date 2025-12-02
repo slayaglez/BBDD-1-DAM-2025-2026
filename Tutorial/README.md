@@ -5,10 +5,11 @@
 Al preparar nuestro entorno, primero debemos tener descargado Docker en nuestra máquina. Empezaremos usando los siguientes comandos:
 `docker run --name spyproduct-db   -e POSTGRES_PASSWORD=1234   -v postgres-data:/var/lib/postgresql/data   -d postgres`
 Para crear nuestro contenedor Docker con una imagen base Postgres, donde:
--**"--name"** será el nombre del contenedor
--**"-e POSTGRES_PASSWORD=1234"** será la contraseña postgres (único argumento obligatorio)
--**"-v postgres-data:/var/lib/postgresql/data"** será donde guardemos los volúmenes de nuestro contenedor (guardado del progreso)
--**"-d postgres"** será la imagen base de nuestro contenedor
+
+- **"--name"** será el nombre del contenedor
+- **"-e POSTGRES_PASSWORD=1234"** será la contraseña postgres (único argumento obligatorio)
+- **"-v postgres-data:/var/lib/postgresql/data"** será donde guardemos los volúmenes de nuestro contenedor (guardado del progreso)
+- **"-d postgres"** será la imagen base de nuestro contenedor
 
 Tras esto usamos `docker ps` para comprobar que el contenedor se está ejecutando y en caso de que así sea usaremos:
 `docker exec -it spyproduct-db psql -U postgres -d spyproduct`
