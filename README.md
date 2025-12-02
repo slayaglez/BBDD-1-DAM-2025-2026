@@ -2,6 +2,11 @@
 Repositorio creado para la asignatura de base de datos de 1º DAM.
 
 ### Despiece del repositorio
+
+#### Tutorial
+En la carpeta tutorial habrá un README.md detallado sobre como preparar el entorno y qué se debe hacer **paso a paso** para poder entender y usar todo lo publicado en este repositorio. Recomiendo fuertemente echarle un ojo si es tu primera vez usando Docker.
+
+#### Actividades
 En las carpetas ***"Actividades"*** habrá un fichero de texto que contendrá lo siguiente:
 -El enunciado del ejercicio
 -El apartado donde se crean las tablas
