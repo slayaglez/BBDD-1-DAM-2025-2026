@@ -13,7 +13,6 @@ En la carpeta tutorial habrá un README.md detallado sobre cómo preparar el ent
 En esta carpeta habrán varios modelos de bases de datos de ejemplo desarrollados a lo largo de todo el curso. A continuación una pequeña descripción de cada base de datos:
 - **Trisebas:** Una BD que imita un modelo parecido al usado en la aplicación para móvil TriCount, donde los usuarios crean grupos donde las deudas y pagos se reparten entre los otros usuarios del grupo.
 - **Blog:** Una BD donde distintos usuarios tienen la posibilidad de crear un único blog asociado a su cuenta.
-- 
 <br>
 <br>
 
