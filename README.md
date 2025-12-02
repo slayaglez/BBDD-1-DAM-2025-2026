@@ -1,5 +1,5 @@
 # BBDD-1-DAM-2025-2026
-Repositorio creado para la asignatura de base de datos de 1º DAM.
+Repositorio creado como material de apoyo para la asignatura de base de datos de 1º DAM en el IES Puerto de la Cruz. Asignatura impartida por Eleazar Morales Díaz.
 
 ## Desglose del repositorio
 
