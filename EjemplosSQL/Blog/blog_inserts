@@ -1,0 +1,19 @@
+==========INSERTAR DATOS===========
+
+INSERT INTO usuario(first_name, last_name)
+VALUES
+('Ivan', 'Mesa'),
+('Borja', 'Estevez'),
+('Javier', 'Reyes'),
+('Yasiel', 'Llanos'),
+('Juan', 'Pablo'),
+('Gustavo', 'Torres'),
+('Alberto', 'Garcia'),
+('Peter', 'Alejandro'),
+('Jorge', 'Mesa');
+
+INSERT INTO blog(title, id_user)
+VALUES
+('El dia que me hice skater', 2),
+('Como escaparse de clase', 3);
+
