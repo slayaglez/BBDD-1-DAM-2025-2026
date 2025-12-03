@@ -63,7 +63,7 @@ VALUES
 ('Peter', 'Alejandro'),
 ('Jorge', 'Mesa');
 
-INSERT INTO blog(title, id_user)
+INSERT INTO blog(title, id_users)
 VALUES
 ('El dia que me hice skater', 1),
 ('Como escaparse de clase', 2),
