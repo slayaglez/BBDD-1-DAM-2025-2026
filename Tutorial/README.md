@@ -31,17 +31,17 @@ Ahora podemos volver a abrir nuestro contenedor con `docker exec -it miblog-db p
 Para la creación de tablas copiaremos las siguientes sentencias en postgres en nuestra terminal `misuperblog=# `
 
 ```
-CREATE TABLE user(
+CREATE TABLE users(
 first_name VARCHAR(255) NOT NULL,
 last_name VARCHAR(255) NOT NULL,
 verified BOOLEAN DEFAULT false,
 password_hash VARCHAR(255),
-id_user INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY);
+id_users INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY);
 
 CREATE TABLE blog(
 title VARCHAR(255) NOT NULL,
 created_in TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-id_user INT REFERENCES user(id_user),
+id_users INT REFERENCES users(id_users),
 id_blog INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY);
 
 ```
