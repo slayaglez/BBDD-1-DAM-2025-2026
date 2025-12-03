@@ -51,7 +51,7 @@ Con esto todas las tablas y relaciones estarán construidas.
 Ahora tendremos que introducir nuestra información, que puede ser al gusto pero aquí dejo una por defecto:
 
 ```
-INSERT INTO usuario(first_name, last_name)
+INSERT INTO users(first_name, last_name)
 VALUES
 ('Ivan', 'Mesa'),
 ('Borja', 'Estevez'),
