@@ -1,0 +1,9 @@
+docker run --name emulib-db  -e POSTGRES_PASSWORD=1234  -v emulib-data:/var/lib/postgresql  -d postgres
+
+docker exec -it emulib-db psql -U postgres
+
+\q
+
+docker volume create emulib-data
+
+
