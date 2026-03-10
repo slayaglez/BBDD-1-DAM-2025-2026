@@ -1,0 +1,86 @@
+INSERT INTO "users" ("nickname", "first_name", "email", "password_hash", "pfp", "color", "tags", "last_online", "created_in") VALUES
+('ShadowRunner', 'Carlos', 'carlos.runner@mail.com', '$2b$12$eImiTXuWVxfM37uY4JANjQ==', 'avatar.io', 16711680, 'gaming,speedrun', '2026-01-12 10:30:00', '2025-05-15 08:00:00'),
+('LunaDigital', 'Elena', 'elena.dev@tech.io', '$2b$12$KjH5G8vL9aP2mN1qR3sT5u==', 'avatar.io', 3447003, 'coding,art', '2026-01-11 22:15:00', '2025-08-20 14:30:00'),
+('IronChef99', 'Ricardo', 'chef.ricardo@kitchen.net', '$2b$12$P9mL4kQ2jH8nF6vD4sS1aB==', 'avatar.io', 16753920, 'cooking,vlog', '2026-01-12 09:45:00', '2025-11-02 11:20:00'),
+('BioHacker', 'Marina', 'marina.bio@science.com', '$2b$12$V3cE5xR7tY9uI1oO3pP5aS==', 'avatar.io', 65280, 'science,bio', '2026-01-10 18:20:00', '2025-01-10 09:00:00'),
+('PixelWizard', 'Julian', 'j.wizard@pixelart.com', '$2b$12$A2sS4dF6gG8hH0jJ2kKl4z==', 'avatar.io', 10027263, 'design,pixelart', '2026-01-12 15:10:00', '2025-03-25 17:45:00'),
+('GamerGirl_X', 'Sofia', 'sofia.gaming@vortex.com', '$2b$12$X9cZ8vB7nM6mQ5wE4rT3yU==', 'avatar.io', 16711935, 'streaming,gaming', '2026-01-12 17:55:00', '2025-06-12 12:00:00'),
+('NomadTech', 'Andrés', 'andres.nomad@work.com', '$2b$12$Z1xX2cC3vV4bB5nN6mM7qW==', 'avatar.io', 255, 'travel,remote', '2026-01-08 12:00:00', '2025-09-30 08:15:00'),
+('MistyRose', 'Clara', 'clara.rose@lifestyle.me', '$2b$12$Q4wW5eE6rR7tT8yY9uUi0o==', 'avatar.io', 16761035, 'books,photography', '2026-01-12 16:40:00', '2025-12-01 10:10:00'),
+('CodeMaster', 'Hugo', 'hugo.code@backend.dev', '$2b$12$L0kK9jJ8hH7gG6fF5dDs4a==', 'avatar.io', 8421504, 'backend,rust', '2026-01-12 14:00:00', '2025-02-14 19:20:00'),
+('AstroBoy', 'Mateo', 'mateo.space@galaxy.com', '$2b$12$S1aD2fG3hJ4kL5zX6cV7bB==', 'avatar.io', 16776960, 'space,physics', '2026-01-11 05:30:00', '2025-07-04 13:00:00');
+
+INSERT INTO "admin" ("id_users_fk") VALUES
+(1),
+(2),
+(5),
+(9),
+(10);
+
+INSERT INTO "game" ("title", "description", "added_by", "overall_rate") VALUES
+('CyberNeon 2077', 'Un RPG de acción ambientado en una metrópolis futurista.', 1, 9),
+('Medieval Siege', 'Simulador de batallas épicas en la edad media.', 2, 8),
+('Galaxy Explorer', 'Exploración espacial infinita y comercio intergaláctico.', 5, 7),
+('Pixel Dungeon', 'Un roguelike de mazmorras con estética retro 8-bit.', 9, 9),
+('Chef Mania', 'Gestión de restaurantes y simulador de cocina profesional.', 3, 6),
+('Code Breaker', 'Juego de puzzles lógicos basado en programación real.', 9, 10),
+('Forest Survival', 'Supervivencia extrema en un bosque lleno de criaturas.', 4, 7),
+('Speed Racer Z', 'Carreras callejeras con personalización total de vehículos.', 1, 8),
+('Ancient Myths', 'Aventura en tercera persona basada en la mitología griega.', 10, 9),
+('Urban Architect', 'Constructor de ciudades con enfoque en sostenibilidad.', 7, 8);
+
+INSERT INTO "console" ("name", "hash", "manufacter", "launch_date") VALUES
+('PlayStation 5', '8fb8483b890f585d8940428e8334863e', 'Sony', '2020-11-12'),
+('Xbox Series X', '4054a37b1247d964d2d6549298642279', 'Microsoft', '2020-11-10'),
+('Nintendo Switch', '2049e3940176378e348924f783226451', 'Nintendo', '2017-03-03'),
+('Steam Deck', '78923498acde89234987239487debcaf', 'Valve', '2022-02-25'),
+('PlayStation 2', '67234987fedc234897234987234987ff', 'Sony', '2000-03-04'),
+('GameCube', '1234567890abcdef1234567890abcdef', 'Nintendo', '2001-09-14'),
+('Sega Dreamcast', 'abcdef1234567890abcdef1234567890', 'Sega', '1998-11-27'),
+('Atari 2600', '9876543210fedcba9876543210fedcba', 'Atari', '1977-09-11'),
+('NES', '550e8400-e29b-41d4-a716-446655440000', 'Nintendo', '1983-07-15'),
+('Genesis', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 'Sega', '1988-10-29');
+
+INSERT INTO "roms" ("id_game_fk", "id_console_fk", "url", "hash") VALUES
+(1, 1, 'storage.cdn', 'e99a18c428cb38d5f260853678922e03'),
+(2, 2, 'storage.cdn', '5d41402abc4b2a76b9719d911017c592'),
+(3, 3, 'storage.cdn', '7b52009b64fd0a2a49e6d8a939753077'),
+(4, 4, 'storage.cdn', '098f6bcd4621d373cade4e832627b4f6'),
+(5, 5, 'storage.cdn', '3f46f4b691060934f8a846c4b9d033a1'),
+(6, 4, 'storage.cdn', '1a79a4d60de6718e8e5b326e338ae533'),
+(7, 3, 'storage.cdn', '827ccb0eea8a706c4c34a16891f84e7b'),
+(8, 7, 'storage.cdn', '202cb962ac59075b964b07152d234b70'),
+(9, 1, 'storage.cdn', 'cafef00ddeadbeefface864299753011'),
+(10, 2, 'storage.cdn', 'acbd18db4cc2f85cedef654fccc4a4d8');
+
+INSERT INTO "pending_games" ("id_game_fk", "added_in", "report") VALUES
+(5, '2026-01-10 14:20:00', 'Revisión de metadatos pendientes.'),
+(7, '2026-01-11 09:30:00', 'Esperando validación de la URL de descarga.'),
+(3, '2026-01-12 08:00:00', 'Descripción demasiado corta, requiere ampliación.'),
+(8, '2026-01-12 10:15:00', 'El hash del archivo no coincide con el reportado.'),
+(10, '2026-01-12 15:45:00', 'Pendiente de asignar etiquetas adicionales.');
+
+INSERT INTO "rating" ("id_game_fk", "id_users_fk", "tags", "rate") VALUES
+(1, 2, 'obra maestra, increible', 5),
+(2, 4, 'bueno pero corto', 4),
+(3, 1, 'muchos bugs', 2),
+(4, 5, 'entretenido', 3),
+(5, 3, 'no me gusto', 1),
+(6, 9, 'desafiante, recomendado', 5),
+(7, 6, 'mediocre', 2),
+(8, 8, 'excelente musica', 4),
+(9, 10, 'graficazos', 5),
+(10, 7, 'aburrido', 0);
+
+INSERT INTO "progress" ("id_users_fk", "id_game_fk", "state") VALUES
+(1, 4, 'en_progreso'),
+(2, 1, 'completado'),
+(3, 5, 'pendiente_de_jugar'),
+(4, 7, 'en_progreso'),
+(5, 3, 'completado'),
+(6, 2, 'pendiente_de_jugar'),
+(7, 10, 'en_progreso'),
+(8, 8, 'completado'),
+(9, 6, 'en_progreso'),
+(10, 9, 'pendiente_de_jugar');
+
