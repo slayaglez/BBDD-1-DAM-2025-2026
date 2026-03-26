@@ -258,6 +258,7 @@ app.put("/usuarios/:id_usuario/tareas/:id_tarea", async (req, res) => {
   }
 });
 
+/**
 app.patch("/usuarios/:id_usuario/tareas/:id_tarea", async (req, res) => {
   try {
     const { id_tarea } = req.params;
@@ -309,3 +310,4 @@ app.patch("/usuarios/:id_usuario/tareas/:id_tarea", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+**/
