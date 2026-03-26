@@ -5,12 +5,29 @@ db-start:
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_DB=postgres \
 	-p 5432:5432 \
+	-v postgres_data_usutarea:/var/lib/postgresql/data \
 	postgres:18-alpine3.22
+
+db-start-empty:
+        docker run -d \
+        --name postgres-api-empty \
+        -e POSTGRES_USER=postgres \
+        -e POSTGRES_PASSWORD=postgres \
+        -e POSTGRES_DB=postgres \
+        -p 5432:5432 \
+        postgres:18-alpine3.22
+
 
 db-stop:
 	docker stop postgres-api
 
+db-stop-empty:
+	docker stop postgres-api-empty
+
 db-reset:
+	docker rm -f postgres-api
+
+db-reset-empty:
 	docker rm -f postgres-api
 
 run:
