@@ -1,6 +1,6 @@
-db-start:
+db-start-empty:
 	docker run -d \
-	--name postgres-api \
+	--name postgres-api-empty \
 	-e POSTGRES_USER=postgres \
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_DB=postgres \
@@ -8,18 +8,29 @@ db-start:
 	-v postgres_data_usutarea:/var/lib/postgresql/data \
 	postgres:18-alpine3.22
 
+<<<<<<< HEAD
 db-start-empty:
         docker run -d \
         --name postgres-api-empty \
+=======
+db-start:
+        docker run -d \
+        --name postgres-api \
+>>>>>>> a43c5c7b31e21f1a779acd61aa85a2d4cef03ea7
         -e POSTGRES_USER=postgres \
         -e POSTGRES_PASSWORD=postgres \
         -e POSTGRES_DB=postgres \
         -p 5432:5432 \
+<<<<<<< HEAD
+=======
+        -v postgres_prueba_volumen:/var/lib/postgresql/data \
+>>>>>>> a43c5c7b31e21f1a779acd61aa85a2d4cef03ea7
         postgres:18-alpine3.22
 
 
 db-stop:
 	docker stop postgres-api
+	docker stop postgres-api-empty
 
 db-stop-empty:
 	docker stop postgres-api-empty
