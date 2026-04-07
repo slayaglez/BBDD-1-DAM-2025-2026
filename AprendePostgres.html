@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprende PostgreSQL</title>
+<style>
+  :root {
+    --primary: #185FA5;
+    --primary-light: #E6F1FB;
+    --primary-dark: #042C53;
+    --success: #3B6D11;
+    --success-light: #EAF3DE;
+    --danger: #A32D2D;
+    --danger-light: #FCEBEB;
+    --warning: #854F0B;
+    --warning-light: #FAEEDA;
+    --neutral: #444441;
+    --neutral-light: #F1EFE8;
+    --border: #D3D1C7;
+    --bg: #ffffff;
+    --bg2: #F8F8F6;
+    --text: #2C2C2A;
+    --text2: #5F5E5A;
+    --radius: 10px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg2); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  header { background: var(--primary-dark); color: white; padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 2rem; }
+  .logo { font-size: 1.1rem; font-weight: 700; padding: 1rem 0; color: white; white-space: nowrap; }
+  .logo span { color: #85B7EB; }
+  nav { display: flex; gap: 0.25rem; flex: 1; }
+  nav button { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 0.88rem; padding: 1.1rem 1rem; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover { color: white; background: rgba(255,255,255,0.05); }
+  nav button.active { color: white; border-bottom-color: #85B7EB; }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .card h2 { font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 0.5rem; }
+  .card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--primary-dark) 0%, #185FA5 100%); color: white; border-radius: var(--radius); padding: 2.5rem; margin-bottom: 2rem; }
+  .hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .hero p { opacity: 0.85; font-size: 1rem; line-height: 1.6; max-width: 600px; }
+  .stats-row { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .stat-pill { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; }
+
+  /* PROGRESS */
+  .progress-bar-outer { background: rgba(255,255,255,0.2); border-radius: 10px; height: 8px; margin-top: 1rem; }
+  .progress-bar-inner { background: #C0DD97; border-radius: 10px; height: 8px; transition: width 0.4s ease; }
+
+  /* TOPIC GRID */
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .topic-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
+  .topic-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(24,95,165,0.1); }
+  .topic-card.completed { border-color: #639922; background: #EAF3DE; }
+  .topic-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .topic-card h3 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+  .topic-card p { font-size: 0.78rem; color: var(--text2); }
+  .topic-badge { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 10px; margin-top: 0.5rem; }
+  .badge-easy { background: var(--success-light); color: var(--success); }
+  .badge-medium { background: var(--warning-light); color: var(--warning); }
+  .badge-hard { background: var(--danger-light); color: var(--danger); }
+
+  /* ===== TEST ===== */
+  .test-container { max-width: 700px; }
+  .question-block { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+  .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .question-num { font-size: 0.8rem; color: var(--text2); }
+  .question-cat { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 10px; background: var(--primary-light); color: var(--primary); }
+  .question-text { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; line-height: 1.5; }
+  .option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; border: 0.5px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s; }
+  .option:hover:not(.disabled) { border-color: var(--primary); background: var(--primary-light); }
+  .option.selected { border-color: var(--primary); background: var(--primary-light); }
+  .option.correct { border-color: #639922; background: var(--success-light); }
+  .option.incorrect { border-color: #A32D2D; background: var(--danger-light); }
+  .option.disabled { cursor: default; }
+  .option-letter { width: 24px; height: 24px; border-radius: 50%; background: var(--neutral-light); color: var(--text2); font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .option.correct .option-letter { background: #639922; color: white; }
+  .option.incorrect .option-letter { background: #A32D2D; color: white; }
+  .explanation { margin-top: 0.75rem; padding: 0.75rem; background: var(--bg2); border-radius: 6px; font-size: 0.85rem; color: var(--text2); display: none; border-left: 3px solid var(--primary); }
+  .explanation.visible { display: block; }
+  .btn { padding: 0.65rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline { background: none; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .test-controls { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+  .score-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; }
+  .score-big { font-size: 4rem; font-weight: 700; }
+  .score-label { font-size: 1rem; color: var(--text2); }
+
+  /* FILTER ROW */
+  .filter-row { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 0.4rem 1rem; border-radius: 20px; border: 0.5px solid var(--border); background: none; font-size: 0.82rem; cursor: pointer; color: var(--text2); transition: all 0.2s; }
+  .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* ===== EDITOR ===== */
+  .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 700px) { .editor-layout { grid-template-columns: 1fr; } }
+  .exercise-panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .exercise-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary-dark); }
+  .exercise-desc { font-size: 0.88rem; color: var(--text2); line-height: 1.6; margin-bottom: 1rem; }
+  .hint-box { background: var(--warning-light); border: 0.5px solid #FAC775; border-radius: 6px; padding: 0.75rem; font-size: 0.82rem; color: var(--warning); margin-bottom: 1rem; display: none; }
+  .hint-box.visible { display: block; }
+  .expected-box { background: var(--neutral-light); border: 0.5px solid var(--border); border-radius: 6px; padding: 0.75rem; font-size: 0.82rem; margin-bottom: 1rem; display: none; }
+  .expected-box.visible { display: block; }
+  .expected-box pre { font-family: var(--mono); font-size: 0.8rem; white-space: pre-wrap; color: var(--text); }
+  .schema-box { background: var(--primary-light); border: 0.5px solid #B5D4F4; border-radius: 6px; padding: 0.75rem; font-size: 0.82rem; color: var(--primary-dark); margin-bottom: 1rem; }
+  .schema-box pre { font-family: var(--mono); font-size: 0.78rem; white-space: pre-wrap; }
+  textarea.sql-editor { width: 100%; height: 180px; font-family: var(--mono); font-size: 0.85rem; padding: 0.75rem; border: 0.5px solid var(--border); border-radius: 8px; background: #1a1a2e; color: #e0e0ff; resize: vertical; outline: none; line-height: 1.6; }
+  textarea.sql-editor:focus { border-color: var(--primary); }
+  .result-box { margin-top: 1rem; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; display: none; }
+  .result-box.visible { display: block; }
+  .result-ok { background: var(--success-light); border: 0.5px solid #97C459; color: var(--success); }
+  .result-err { background: var(--danger-light); border: 0.5px solid #F09595; color: var(--danger); }
+  .result-warn { background: var(--warning-light); border: 0.5px solid #FAC775; color: var(--warning); }
+  .ex-nav { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .ex-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all 0.2s; }
+  .ex-dot.active { background: var(--primary); }
+  .ex-dot.done { background: #639922; }
+  .ex-counter { font-size: 0.82rem; color: var(--text2); margin-left: auto; }
+  .cat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); font-weight: 600; margin-bottom: 0.5rem; margin-top: 0.25rem; }
+
+  /* ===== QUERIES ===== */
+  .db-schema { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+  .table-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .table-header { background: var(--primary-dark); color: white; padding: 0.5rem 0.75rem; font-size: 0.82rem; font-weight: 600; }
+  .table-fields { padding: 0.5rem 0.75rem; }
+  .field-row { display: flex; justify-content: space-between; align-items: center; padding: 0.2rem 0; font-size: 0.75rem; border-bottom: 0.5px solid var(--neutral-light); }
+  .field-row:last-child { border-bottom: none; }
+  .field-name { color: var(--text); font-family: var(--mono); }
+  .field-type { color: var(--text2); font-size: 0.7rem; }
+  .field-pk { color: #FAC775; font-size: 0.65rem; font-weight: 700; }
+  .field-fk { color: #85B7EB; font-size: 0.65rem; }
+
+  /* CODE SNIPPETS */
+  code { font-family: var(--mono); font-size: 0.82em; background: var(--neutral-light); padding: 0.1em 0.35em; border-radius: 3px; color: var(--primary-dark); }
+  pre.code-block { background: #1a1a2e; color: #e0e0ff; padding: 1rem; border-radius: 8px; font-family: var(--mono); font-size: 0.82rem; overflow-x: auto; margin: 0.75rem 0; line-height: 1.6; }
+  .kw { color: #85B7EB; }
+  .fn { color: #C0DD97; }
+  .str { color: #FAC775; }
+  .cm { color: #888780; }
+
+  /* MISC */
+  .section-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.25rem; }
+  .section-sub { color: var(--text2); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .tag { display: inline-block; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 10px; font-weight: 500; margin-right: 0.25rem; }
+  .separator { border: none; border-top: 0.5px solid var(--border); margin: 1.5rem 0; }
+  .icon-check { color: #639922; }
+  .icon-x { color: #A32D2D; }
+  .mt1 { margin-top: 1rem; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .overall-score { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .score-pill { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; text-align: center; min-width: 120px; }
+  .score-pill-num { font-size: 1.6rem; font-weight: 700; }
+  .score-pill-label { font-size: 0.75rem; color: var(--text2); }
+  .topic-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .topic-btn { padding: 0.4rem 0.9rem; border-radius: 20px; border: 0.5px solid var(--border); background: none; font-size: 0.82rem; cursor: pointer; color: var(--text2); transition: all 0.2s; }
+  .topic-btn.active { background: var(--primary-dark); color: white; border-color: var(--primary-dark); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">🐘 <span>Post</span>greSQL</div>
+    <nav>
+      <button class="active" onclick="showSection('home')">Inicio</button>
+      <button onclick="showSection('test')">Test</button>
+      <button onclick="showSection('editor')">Ejercicios DDL/DML</button>
+      <button onclick="showSection('queries')">Consultas SELECT</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ===== HOME ===== -->
+<div id="home" class="section active">
+  <div class="hero">
+    <h1>Aprende PostgreSQL</h1>
+    <p>Plataforma interactiva basada en el libro de Bases de Datos. Practica con tests, escribe sentencias DDL/DML y resuelve consultas sobre la base de datos del videoclub.</p>
+    <div class="stats-row">
+      <div class="stat-pill">📝 60 preguntas de test</div>
+      <div class="stat-pill">⌨️ 30 ejercicios DDL/DML</div>
+      <div class="stat-pill">🔍 25 consultas SELECT</div>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="global-progress" style="width:0%"></div>
+    </div>
+    <p style="margin-top:0.5rem;font-size:0.82rem;opacity:0.7" id="global-progress-text">0% completado</p>
+  </div>
+
+  <div class="section-title">Contenidos</div>
+  <p class="section-sub">Todos los temas del libro disponibles para practicar</p>
+
+  <div class="topic-grid">
+    <div class="topic-card" onclick="showSection('test');setTestFilter('select')">
+      <div class="topic-icon">🔍</div>
+      <h3>SELECT y alias</h3>
+      <p>Consultas básicas, alias de columnas, concatenación</p>
+      <span class="topic-badge badge-easy">Básico</span>
+    </div>
+    <div class="topic-card" onclick="showSection('test');setTestFilter('orderby')">
+      <div class="topic-icon">↕️</div>
+      <h3>ORDER BY / DISTINCT</h3>
+      <p>Ordenamiento, valores NULL, eliminación de duplicados</p>
+      <span class="topic-badge badge-easy">Básico</span>
+    </div>
+    <div class="topic-card" onclick="showSection('test');setTestFilter('where')">
+      <div class="topic-icon">🔎</div>
+      <h3>WHERE y filtros</h3>
+      <p>Operadores de comparación, LIKE, BETWEEN, IN, IS NULL</p>
+      <span class="topic-badge badge-easy">Básico</span>
+    </div>
+    <div class="topic-card" onclick="showSection('test');setTestFilter('joins')">
+      <div class="topic-icon">🔗</div>
+      <h3>JOINs</h3>
+      <p>INNER, LEFT, RIGHT, FULL, CROSS, NATURAL, SELF JOIN</p>
+      <span class="topic-badge badge-medium">Intermedio</span>
+    </div>
+    <div class="topic-card" onclick="showSection('test');setTestFilter('sets')">
+      <div class="topic-icon">∪</div>
+      <h3>Operaciones de conjuntos</h3>
+      <p>UNION, INTERSECT, EXCEPT</p>
+      <span class="topic-badge badge-medium">Intermedio</span>
+    </div>
+    <div class="topic-card" onclick="showSection('test');setTestFilter('group')">
+      <div class="topic-icon">📊</div>
+      <h3>GROUP BY y HAVING</h3>
+      <p>Agrupación, funciones de agregado, filtrado de grupos</p>
+      <span class="topic-badge badge-medium">Intermedio</span>
+    </div>
+    <div class="topic-card" onclick="showSection('editor')">
+      <div class="topic-icon">🏗️</div>
+      <h3>CREATE TABLE</h3>
+      <p>Tipos de datos, restricciones, claves primarias y foráneas</p>
+      <span class="topic-badge badge-medium">Intermedio</span>
+    </div>
+    <div class="topic-card" onclick="showSection('editor')">
+      <div class="topic-icon">✏️</div>
+      <h3>ALTER / DROP TABLE</h3>
+      <p>Modificación de estructura, renombrado, eliminación</p>
+      <span class="topic-badge badge-hard">Avanzado</span>
+    </div>
+    <div class="topic-card" onclick="showSection('queries')">
+      <div class="topic-icon">🎬</div>
+      <h3>Consultas sobre el videoclub</h3>
+      <p>Práctica real con la base de datos de películas y clientes</p>
+      <span class="topic-badge badge-hard">Avanzado</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEST ===== -->
+<div id="test" class="section">
+  <div class="section-title">Test de conocimientos</div>
+  <p class="section-sub">Responde las preguntas y comprueba tu nivel. Puedes filtrar por tema.</p>
+
+  <div class="filter-row" id="test-filters">
+    <button class="filter-btn active" onclick="setTestFilter('all')">Todos</button>
+    <button class="filter-btn" onclick="setTestFilter('select')">SELECT</button>
+    <button class="filter-btn" onclick="setTestFilter('orderby')">ORDER BY</button>
+    <button class="filter-btn" onclick="setTestFilter('where')">WHERE</button>
+    <button class="filter-btn" onclick="setTestFilter('joins')">JOINs</button>
+    <button class="filter-btn" onclick="setTestFilter('sets')">Conjuntos</button>
+    <button class="filter-btn" onclick="setTestFilter('group')">GROUP BY</button>
+    <button class="filter-btn" onclick="setTestFilter('ddl')">DDL</button>
+  </div>
+
+  <div class="overall-score">
+    <div class="score-pill">
+      <div class="score-pill-num" id="test-correct" style="color:#3B6D11">0</div>
+      <div class="score-pill-label">Correctas</div>
+    </div>
+    <div class="score-pill">
+      <div class="score-pill-num" id="test-wrong" style="color:#A32D2D">0</div>
+      <div class="score-pill-label">Incorrectas</div>
+    </div>
+    <div class="score-pill">
+      <div class="score-pill-num" id="test-pct" style="color:var(--primary)">—</div>
+      <div class="score-pill-label">Puntuación</div>
+    </div>
+    <button class="btn btn-outline" onclick="resetTest()" style="margin-left:auto;align-self:center">↺ Reiniciar</button>
+  </div>
+
+  <div id="test-questions"></div>
+</div>
+
+<!-- ===== EDITOR DDL/DML ===== -->
+<div id="editor" class="section">
+  <div class="section-title">Ejercicios DDL / DML</div>
+  <p class="section-sub">Lee las instrucciones, escribe la sentencia SQL y comprueba tu respuesta.</p>
+
+  <div class="topic-selector" id="editor-topics"></div>
+
+  <div class="editor-layout">
+    <div class="exercise-panel">
+      <div class="flex-between" style="margin-bottom:0.5rem">
+        <div>
+          <div class="cat-label" id="ex-cat-label">Categoría</div>
+          <div class="exercise-title" id="ex-title">Título</div>
+        </div>
+        <div class="ex-counter" id="ex-counter">1 / 30</div>
+      </div>
+      <div class="ex-nav" id="ex-dots"></div>
+      <div class="exercise-desc" id="ex-desc"></div>
+      <div class="schema-box" id="ex-schema" style="display:none">
+        <strong style="font-size:0.78rem;">Contexto:</strong>
+        <pre id="ex-schema-content"></pre>
+      </div>
+      <div class="flex-between" style="gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="toggleHint()">💡 Pista</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="toggleExpected()">👁 Ver solución</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="prevEx()">← Anterior</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="nextEx()">Siguiente →</button>
+      </div>
+      <div class="hint-box" id="hint-box"></div>
+      <div class="expected-box" id="expected-box"><pre id="expected-content"></pre></div>
+    </div>
+
+    <div class="exercise-panel">
+      <div class="cat-label">Tu respuesta SQL</div>
+      <textarea class="sql-editor" id="sql-input" placeholder="Escribe aquí tu sentencia SQL..."></textarea>
+      <div class="test-controls">
+        <button class="btn btn-primary" onclick="checkSQL()">✓ Comprobar</button>
+        <button class="btn btn-outline" onclick="clearSQL()">Limpiar</button>
+      </div>
+      <div class="result-box" id="result-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUERIES ===== -->
+<div id="queries" class="section">
+  <div class="section-title">Consultas sobre el videoclub</div>
+  <p class="section-sub">Base de datos de películas, clientes y alquileres. Escribe las consultas SELECT solicitadas.</p>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="flex-between" style="cursor:pointer" onclick="toggleSchema()">
+      <h2 style="margin:0">📋 Esquema de la base de datos</h2>
+      <span id="schema-toggle-icon">▼</span>
+    </div>
+    <div id="schema-content" style="margin-top:1rem">
+      <div class="db-schema">
+        <div class="table-card">
+          <div class="table-header">customer</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">customer_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">first_name</span><span class="field-type">VARCHAR(45)</span></div>
+            <div class="field-row"><span class="field-name">last_name</span><span class="field-type">VARCHAR(45)</span></div>
+            <div class="field-row"><span class="field-name">email</span><span class="field-type">VARCHAR(50)</span></div>
+            <div class="field-row"><span class="field-name">address_id</span><span class="field-fk">FK→address</span></div>
+            <div class="field-row"><span class="field-name">active</span><span class="field-type">BOOLEAN</span></div>
+            <div class="field-row"><span class="field-name">create_date</span><span class="field-type">DATE</span></div>
+            <div class="field-row"><span class="field-name">store_id</span><span class="field-fk">FK→store</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">film</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">film_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">title</span><span class="field-type">VARCHAR(255)</span></div>
+            <div class="field-row"><span class="field-name">description</span><span class="field-type">TEXT</span></div>
+            <div class="field-row"><span class="field-name">release_year</span><span class="field-type">SMALLINT</span></div>
+            <div class="field-row"><span class="field-name">rental_rate</span><span class="field-type">NUMERIC(4,2)</span></div>
+            <div class="field-row"><span class="field-name">length</span><span class="field-type">SMALLINT</span></div>
+            <div class="field-row"><span class="field-name">rating</span><span class="field-type">VARCHAR(10)</span></div>
+            <div class="field-row"><span class="field-name">language_id</span><span class="field-fk">FK→language</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">rental</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">rental_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">rental_date</span><span class="field-type">TIMESTAMP</span></div>
+            <div class="field-row"><span class="field-name">return_date</span><span class="field-type">TIMESTAMP</span></div>
+            <div class="field-row"><span class="field-name">customer_id</span><span class="field-fk">FK→customer</span></div>
+            <div class="field-row"><span class="field-name">inventory_id</span><span class="field-fk">FK→inventory</span></div>
+            <div class="field-row"><span class="field-name">staff_id</span><span class="field-fk">FK→staff</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">payment</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">payment_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">customer_id</span><span class="field-fk">FK→customer</span></div>
+            <div class="field-row"><span class="field-name">staff_id</span><span class="field-fk">FK→staff</span></div>
+            <div class="field-row"><span class="field-name">rental_id</span><span class="field-fk">FK→rental</span></div>
+            <div class="field-row"><span class="field-name">amount</span><span class="field-type">NUMERIC(5,2)</span></div>
+            <div class="field-row"><span class="field-name">payment_date</span><span class="field-type">TIMESTAMP</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">inventory</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">inventory_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">film_id</span><span class="field-fk">FK→film</span></div>
+            <div class="field-row"><span class="field-name">store_id</span><span class="field-fk">FK→store</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">address</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">address_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">address</span><span class="field-type">VARCHAR(50)</span></div>
+            <div class="field-row"><span class="field-name">city_id</span><span class="field-fk">FK→city</span></div>
+            <div class="field-row"><span class="field-name">postal_code</span><span class="field-type">VARCHAR(10)</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">city</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">city_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">city</span><span class="field-type">VARCHAR(50)</span></div>
+            <div class="field-row"><span class="field-name">country_id</span><span class="field-fk">FK→country</span></div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">staff</div>
+          <div class="table-fields">
+            <div class="field-row"><span class="field-name">staff_id</span><span class="field-pk">PK</span></div>
+            <div class="field-row"><span class="field-name">first_name</span><span class="field-type">VARCHAR(45)</span></div>
+            <div class="field-row"><span class="field-name">last_name</span><span class="field-type">VARCHAR(45)</span></div>
+            <div class="field-row"><span class="field-name">store_id</span><span class="field-fk">FK→store</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic-selector" id="query-topics"></div>
+
+  <div class="editor-layout">
+    <div class="exercise-panel">
+      <div class="flex-between" style="margin-bottom:0.5rem">
+        <div>
+          <div class="cat-label" id="qex-cat-label">Categoría</div>
+          <div class="exercise-title" id="qex-title">Título</div>
+        </div>
+        <div class="ex-counter" id="qex-counter">1 / 25</div>
+      </div>
+      <div class="ex-nav" id="qex-dots"></div>
+      <div class="exercise-desc" id="qex-desc"></div>
+      <div class="flex-between" style="gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="toggleQHint()">💡 Pista</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="toggleQExpected()">👁 Ver solución</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="prevQEx()">← Anterior</button>
+        <button class="btn btn-outline" style="font-size:0.8rem" onclick="nextQEx()">Siguiente →</button>
+      </div>
+      <div class="hint-box" id="qhint-box"></div>
+      <div class="expected-box" id="qexpected-box"><pre id="qexpected-content"></pre></div>
+    </div>
+
+    <div class="exercise-panel">
+      <div class="cat-label">Tu consulta SQL</div>
+      <textarea class="sql-editor" id="qsql-input" placeholder="Escribe aquí tu consulta SELECT..."></textarea>
+      <div class="test-controls">
+        <button class="btn btn-primary" onclick="checkQuery()">✓ Comprobar</button>
+        <button class="btn btn-outline" onclick="clearQSQL()">Limpiar</button>
+      </div>
+      <div class="result-box" id="qresult-box"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ==================== NAV ====================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = ['home','test','editor','queries'].indexOf(id);
+  document.querySelectorAll('nav button')[idx].classList.add('active');
+  if (id === 'test') renderTest();
+  if (id === 'editor') renderEditor();
+  if (id === 'queries') renderQueries();
+}
+
+function toggleSchema() {
+  const c = document.getElementById('schema-content');
+  const i = document.getElementById('schema-toggle-icon');
+  c.style.display = c.style.display === 'none' ? 'block' : 'none';
+  i.textContent = c.style.display === 'none' ? '▶' : '▼';
+}
+
+// ==================== TEST DATA ====================
+const QUESTIONS = [
+  // SELECT
+  { id:1, cat:'select', topic:'SELECT', q:'¿Qué devuelve la consulta SELECT * FROM customer?', opts:['Solo la primera fila','Todas las columnas y filas de customer','Solo las columnas especificadas','Nada si no hay WHERE'], ans:1, exp:'El asterisco (*) es un comodín que selecciona todas las columnas de la tabla.' },
+  { id:2, cat:'select', topic:'SELECT', q:'¿Por qué se considera mala práctica usar SELECT * en producción?', opts:['Porque no funciona en PostgreSQL','Porque puede afectar el rendimiento y dificultar la lectura del código','Porque solo selecciona 10 columnas','Porque requiere permisos especiales'], ans:1, exp:'SELECT * puede consumir más recursos de lo necesario y si la tabla cambia puede generar resultados inesperados.' },
+  { id:3, cat:'select', topic:'SELECT', q:'¿En qué orden evalúa PostgreSQL las cláusulas de un SELECT básico?', opts:['SELECT → FROM','FROM → SELECT','WHERE → FROM → SELECT','SELECT → WHERE → FROM'], ans:1, exp:'PostgreSQL evalúa FROM antes que SELECT. El orden completo es: FROM → WHERE → SELECT → ORDER BY.' },
+  { id:4, cat:'select', topic:'SELECT', q:'¿Cuál es el operador de concatenación en PostgreSQL?', opts:['+ ','+','||','&&'], ans:2, exp:'En PostgreSQL el operador || concatena cadenas de texto: first_name || \' \' || last_name.' },
+  { id:5, cat:'select', topic:'SELECT', q:'¿Es válida la sentencia SELECT NOW();?', opts:['No, siempre necesita FROM','Sí, FROM es opcional cuando no se consultan tablas','Solo si hay una tabla llamada NOW','No, NOW no es una función válida'], ans:1, exp:'La cláusula FROM es opcional. SELECT NOW() devuelve la fecha y hora actuales del sistema.' },
+  { id:6, cat:'select', topic:'Alias', q:'¿Cuál es la forma correcta de asignar el alias "nombre completo" (con espacio) a una columna?', opts:['AS nombre completo','AS `nombre completo`','AS "nombre completo"',"AS 'nombre completo'"], ans:2, exp:'Los alias con espacios deben ir entre comillas dobles en PostgreSQL.' },
+  { id:7, cat:'select', topic:'Alias', q:'¿Es obligatoria la palabra clave AS para los alias de columna?', opts:['Sí, siempre','No, AS es opcional','Solo en ORDER BY','Solo en WHERE'], ans:1, exp:'AS es opcional. Puedes escribir SELECT first_name nombre en lugar de SELECT first_name AS nombre.' },
+  { id:8, cat:'select', topic:'Alias', q:'¿Puedes usar un alias de columna en la cláusula WHERE?', opts:['Sí, siempre','No, porque WHERE se evalúa antes que SELECT','Solo si usas AS','Solo con funciones'], ans:1, exp:'WHERE se evalúa antes que SELECT, por lo que el alias aún no existe en ese momento. El orden es: FROM → WHERE → SELECT → ORDER BY.' },
+  // ORDER BY
+  { id:9, cat:'orderby', topic:'ORDER BY', q:'¿Cuál es el orden de clasificación por defecto si no se especifica ASC ni DESC?', opts:['DESC','ASC','Ninguno, es aleatorio','Depende del tipo de dato'], ans:1, exp:'Si se omite ASC o DESC, ORDER BY utiliza ASC (ascendente) por defecto.' },
+  { id:10, cat:'orderby', topic:'ORDER BY', q:'¿Se puede usar un alias de columna definido en SELECT dentro de ORDER BY?', opts:['No, nunca','Sí, porque ORDER BY se evalúa después de SELECT','Solo si el alias no tiene espacios','Solo con números'], ans:1, exp:'El orden de evaluación es SELECT → ORDER BY, por lo que ORDER BY puede usar alias definidos en el SELECT.' },
+  { id:11, cat:'orderby', topic:'ORDER BY', q:'Con ORDER BY num ASC (sin especificar NULLS), ¿dónde aparecen los NULL?', opts:['Al principio','Al final (NULLS LAST por defecto en ASC)','No aparecen','En el medio'], ans:1, exp:'En orden ascendente, el comportamiento por defecto es NULLS LAST.' },
+  { id:12, cat:'orderby', topic:'ORDER BY', q:'¿Qué hace la cláusula NULLS FIRST en ORDER BY?', opts:['Elimina los NULL','Coloca los NULL antes que los valores no nulos','Coloca los NULL después de los no nulos','Convierte los NULL en 0'], ans:1, exp:'NULLS FIRST coloca los valores NULL antes que los demás en el resultado ordenado.' },
+  { id:13, cat:'orderby', topic:'DISTINCT', q:'¿Qué elimina SELECT DISTINCT?', opts:['Las filas con NULL','Las filas duplicadas del resultado','Las columnas duplicadas','Los valores NULL y duplicados'], ans:1, exp:'SELECT DISTINCT elimina las filas duplicadas del conjunto de resultados, conservando solo una por cada grupo.' },
+  { id:14, cat:'orderby', topic:'DISTINCT', q:'Si aplicas SELECT DISTINCT col1, col2, ¿cómo determina PostgreSQL los duplicados?', opts:['Solo por col1','Solo por col2','Por la combinación de col1 y col2','Por la primera columna listada'], ans:2, exp:'Con varias columnas, DISTINCT evalúa la combinación de valores de todas las columnas indicadas.' },
+  { id:15, cat:'orderby', topic:'FETCH', q:'¿Qué diferencia hay entre LIMIT y FETCH?', opts:['No hay diferencia, son sinónimos','FETCH es el estándar SQL:2008, LIMIT es específico de PostgreSQL','LIMIT devuelve más filas','FETCH solo funciona con ORDER BY'], ans:1, exp:'FETCH es la forma estándar SQL. LIMIT es específico de algunos SGBD como PostgreSQL y MySQL.' },
+  // WHERE
+  { id:16, cat:'where', topic:'WHERE', q:'¿Cuál es el operador para buscar valores dentro de un rango?', opts:['IN','BETWEEN','LIKE','EXISTS'], ans:1, exp:'BETWEEN comprueba si un valor está dentro de un rango: valor BETWEEN mínimo AND máximo (ambos inclusive).' },
+  { id:17, cat:'where', topic:'WHERE', q:'¿Qué comodín de LIKE representa cualquier número de caracteres?', opts:['_','%','*','?'], ans:1, exp:'El % en LIKE representa cero o más caracteres. El _ representa exactamente un carácter.' },
+  { id:18, cat:'where', topic:'WHERE', q:'¿Qué operador ignora mayúsculas y minúsculas al buscar patrones?', opts:['LIKE','ILIKE','SIMILAR TO','RLIKE'], ans:1, exp:'ILIKE es la versión case-insensitive de LIKE en PostgreSQL.' },
+  { id:19, cat:'where', topic:'WHERE', q:'¿Cómo se comprueba si un valor es NULL en WHERE?', opts:['= NULL','== NULL','IS NULL','NULL = valor'], ans:2, exp:'Los valores NULL no pueden compararse con = . Debes usar IS NULL o IS NOT NULL.' },
+  { id:20, cat:'where', topic:'WHERE', q:'¿En qué orden evalúa PostgreSQL WHERE respecto a SELECT?', opts:['WHERE antes que FROM','FROM → WHERE → SELECT','SELECT → WHERE → FROM','WHERE → SELECT → FROM'], ans:1, exp:'El orden es FROM → WHERE → SELECT → ORDER BY. Por eso no puedes usar alias de SELECT en WHERE.' },
+  { id:21, cat:'where', topic:'WHERE', q:'¿Qué operador comprueba si un valor está dentro de una lista?', opts:['BETWEEN','IN','LIKE','ANY'], ans:1, exp:'El operador IN comprueba si un valor coincide con cualquier valor de la lista: valor IN (a, b, c).' },
+  // JOINs
+  { id:22, cat:'joins', topic:'INNER JOIN', q:'¿Qué filas devuelve un INNER JOIN?', opts:['Todas las filas de la tabla izquierda','Todas las filas de ambas tablas','Solo las filas que tienen coincidencia en ambas tablas','Las filas sin coincidencia'], ans:2, exp:'INNER JOIN devuelve únicamente las filas que tienen coincidencia en ambas tablas según la condición ON.' },
+  { id:23, cat:'joins', topic:'LEFT JOIN', q:'En un LEFT JOIN, ¿qué ocurre con las filas de la tabla izquierda sin coincidencia en la derecha?', opts:['Se eliminan','Se incluyen con NULL en las columnas de la tabla derecha','Se incluyen con 0 en las columnas de la tabla derecha','Generan un error'], ans:1, exp:'LEFT JOIN devuelve todas las filas de la tabla izquierda. Si no hay coincidencia, las columnas de la derecha son NULL.' },
+  { id:24, cat:'joins', topic:'RIGHT JOIN', q:'¿En qué se diferencia RIGHT JOIN de LEFT JOIN?', opts:['No hay diferencia','RIGHT JOIN incluye todas las filas de la tabla derecha en lugar de la izquierda','RIGHT JOIN elimina los NULL','RIGHT JOIN solo funciona con claves primarias'], ans:1, exp:'RIGHT JOIN devuelve todas las filas de la tabla de la derecha. Es el espejo del LEFT JOIN.' },
+  { id:25, cat:'joins', topic:'SELF JOIN', q:'¿Para qué se usa un SELF JOIN?', opts:['Para unir dos tablas diferentes','Para unir una tabla consigo misma, útil en jerarquías','Para eliminar duplicados','Para ordenar resultados'], ans:1, exp:'SELF JOIN une una tabla consigo misma usando alias diferentes, útil para relaciones jerárquicas como empleados-gerentes.' },
+  { id:26, cat:'joins', topic:'FULL OUTER JOIN', q:'¿Qué devuelve un FULL OUTER JOIN?', opts:['Solo las coincidencias','Todas las filas de la tabla izquierda','Todas las filas de ambas tablas, con NULL donde no hay coincidencia','Solo las filas sin coincidencia'], ans:2, exp:'FULL OUTER JOIN combina LEFT JOIN + RIGHT JOIN: devuelve todas las filas de ambas tablas, con NULL donde no hay coincidencia.' },
+  { id:27, cat:'joins', topic:'CROSS JOIN', q:'¿Cuántas filas produce un CROSS JOIN entre tabla A (3 filas) y tabla B (4 filas)?', opts:['3','4','7','12'], ans:3, exp:'CROSS JOIN genera el producto cartesiano: 3 × 4 = 12 filas. Cada fila de A se combina con cada fila de B.' },
+  { id:28, cat:'joins', topic:'NATURAL JOIN', q:'¿Cómo determina NATURAL JOIN las columnas de unión?', opts:['Por las claves primarias','Por las columnas con el mismo nombre y tipo en ambas tablas','Por el orden de las columnas','Lo especifica el usuario con ON'], ans:1, exp:'NATURAL JOIN detecta automáticamente las columnas que tienen el mismo nombre y tipo en ambas tablas.' },
+  { id:29, cat:'joins', topic:'NATURAL JOIN', q:'¿Por qué se recomienda evitar NATURAL JOIN en producción?', opts:['Es muy lento','Puede producir resultados inesperados si las tablas comparten columnas con nombres iguales no deseadas','No es estándar SQL','No soporta índices'], ans:1, exp:'Si las tablas comparten columnas con el mismo nombre que no son las de unión deseadas, el resultado puede ser incorrecto.' },
+  // Conjuntos
+  { id:30, cat:'sets', topic:'UNION', q:'¿Qué hace el operador UNION respecto a los duplicados?', opts:['Los conserva todos','Los elimina','Genera un error si hay duplicados','Depende del tipo de dato'], ans:1, exp:'UNION elimina los duplicados del resultado combinado. Usa UNION ALL si quieres conservarlos.' },
+  { id:31, cat:'sets', topic:'UNION', q:'¿Qué condición deben cumplir las consultas combinadas con UNION?', opts:['Deben tener el mismo número de tablas','Deben tener el mismo número y tipos compatibles de columnas','Deben tener el mismo número de filas','Deben ordenarse por las mismas columnas'], ans:1, exp:'El número y orden de columnas debe ser idéntico, y los tipos deben ser compatibles entre ambas consultas.' },
+  { id:32, cat:'sets', topic:'INTERSECT', q:'¿Qué devuelve INTERSECT?', opts:['Las filas que están en la primera consulta pero no en la segunda','Las filas de ambas consultas incluyendo duplicados','Solo las filas que aparecen en ambas consultas','La suma de filas de ambas consultas'], ans:2, exp:'INTERSECT devuelve únicamente las filas que aparecen en ambos conjuntos de resultados.' },
+  { id:33, cat:'sets', topic:'EXCEPT', q:'¿Qué devuelve SELECT A EXCEPT SELECT B?', opts:['Las filas en A y en B','Las filas en A que no están en B','Las filas en B que no están en A','Todas las filas de A y B'], ans:1, exp:'EXCEPT devuelve las filas distintas de la primera consulta que no aparecen en la segunda.' },
+  { id:34, cat:'sets', topic:'UNION', q:'¿Dónde debe colocarse ORDER BY cuando se usa con UNION?', opts:['Después de la primera consulta','Antes de UNION','Después de la segunda (última) consulta','Antes de SELECT'], ans:2, exp:'ORDER BY se coloca después de la segunda (o última) consulta para ordenar el resultado combinado final.' },
+  // GROUP BY
+  { id:35, cat:'group', topic:'GROUP BY', q:'¿En qué momento del orden de evaluación SQL se ejecuta GROUP BY?', opts:['Antes de FROM','Después de FROM y WHERE, antes de SELECT','Después de ORDER BY','Al mismo tiempo que SELECT'], ans:1, exp:'El orden completo es: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.' },
+  { id:36, cat:'group', topic:'GROUP BY', q:'¿Qué función de agregado cuenta el número de filas?', opts:['SUM()','AVG()','COUNT()','MAX()'], ans:2, exp:'COUNT() cuenta el número de filas (o valores no nulos si se especifica una columna).' },
+  { id:37, cat:'group', topic:'GROUP BY', q:'Si una columna aparece en SELECT pero no en ninguna función de agregado, ¿qué debes hacer?', opts:['Nada, es opcional','Incluirla también en GROUP BY','Añadir DISTINCT','Usar WHERE'], ans:1, exp:'Toda columna en SELECT que no esté dentro de una función agregada debe estar en GROUP BY.' },
+  { id:38, cat:'group', topic:'HAVING', q:'¿Cuál es la diferencia principal entre WHERE y HAVING?', opts:['No hay diferencia','WHERE filtra filas antes de agrupar; HAVING filtra grupos después de agrupar','HAVING es más rápido','WHERE solo funciona con números'], ans:1, exp:'WHERE actúa sobre filas individuales antes del GROUP BY. HAVING actúa sobre los grupos ya formados.' },
+  { id:39, cat:'group', topic:'HAVING', q:'¿Puedes usar alias de SELECT dentro de HAVING?', opts:['Sí, siempre','No, debes repetir la expresión completa de la función de agregado','Solo si el alias es numérico','Solo en PostgreSQL'], ans:1, exp:'HAVING se evalúa antes que SELECT, por lo que los alias aún no existen en ese momento.' },
+  { id:40, cat:'group', topic:'HAVING', q:'¿Cuál es la consulta correcta para obtener clientes con total de pagos mayor a 200?', opts:['SELECT customer_id WHERE SUM(amount) > 200','SELECT customer_id, SUM(amount) FROM payment GROUP BY customer_id HAVING SUM(amount) > 200','SELECT customer_id, SUM(amount) FROM payment HAVING SUM(amount) > 200','SELECT customer_id, SUM(amount) FROM payment WHERE amount > 200 GROUP BY customer_id'], ans:1, exp:'GROUP BY agrupa por cliente, y HAVING filtra los grupos cuya suma supera 200.' },
+  // DDL
+  { id:41, cat:'ddl', topic:'CREATE TABLE', q:'¿Qué hace IF NOT EXISTS en CREATE TABLE?', opts:['Elimina la tabla si existe','Crea la tabla solo si no existe previamente, sin error','Muestra un error si la tabla existe','Reemplaza la tabla existente'], ans:1, exp:'IF NOT EXISTS crea la tabla solo si no existe. Si ya existe, emite un aviso (notice) en lugar de un error.' },
+  { id:42, cat:'ddl', topic:'DATA TYPES', q:'¿Cuál es la diferencia entre VARCHAR(n) y TEXT?', opts:['VARCHAR es más lento','TEXT tiene un límite de 1000 caracteres','VARCHAR tiene un límite máximo n; TEXT no tiene límite explícito','No hay diferencia'], ans:2, exp:'VARCHAR(n) limita la longitud a n caracteres. TEXT no tiene límite explícito (hasta ~1 GB).' },
+  { id:43, cat:'ddl', topic:'DATA TYPES', q:'¿Qué tipo de dato deberías usar para un precio con decimales exactos?', opts:['FLOAT','REAL','NUMERIC(p,s)','DOUBLE PRECISION'], ans:2, exp:'NUMERIC(p,s) tiene precisión arbitraria exacta, ideal para valores monetarios. FLOAT/REAL tienen imprecisiones de punto flotante.' },
+  { id:44, cat:'ddl', topic:'Restricciones', q:'¿Qué restricción garantiza que no haya valores duplicados en una columna?', opts:['NOT NULL','PRIMARY KEY','UNIQUE','CHECK'], ans:2, exp:'UNIQUE garantiza que todos los valores de una columna (o combinación) sean distintos.' },
+  { id:45, cat:'ddl', topic:'Restricciones', q:'¿Cuántas claves primarias puede tener una tabla?', opts:['Ilimitadas','Solo una','Dos como máximo','Depende del motor'], ans:1, exp:'Una tabla solo puede tener una clave primaria, aunque puede ser compuesta (múltiples columnas).' },
+  { id:46, cat:'ddl', topic:'ALTER TABLE', q:'¿Qué comando añade una nueva columna a una tabla existente?', opts:['ALTER TABLE t ADD COLUMN col tipo','ALTER TABLE t INSERT COLUMN col tipo','ALTER TABLE t NEW COLUMN col tipo','MODIFY TABLE t ADD col tipo'], ans:0, exp:'La sintaxis correcta es: ALTER TABLE nombre_tabla ADD COLUMN nombre_columna tipo_dato;' },
+  { id:47, cat:'ddl', topic:'ALTER TABLE', q:'¿Cómo se cambia el nombre de una columna en PostgreSQL?', opts:['ALTER TABLE t MODIFY COLUMN old TO new','ALTER TABLE t RENAME COLUMN old TO new','ALTER TABLE t CHANGE COLUMN old new','UPDATE TABLE t RENAME old TO new'], ans:1, exp:'La sintaxis es: ALTER TABLE nombre_tabla RENAME COLUMN nombre_actual TO nuevo_nombre;' },
+  { id:48, cat:'ddl', topic:'DROP TABLE', q:'¿Qué hace DROP TABLE ... CASCADE?', opts:['Elimina solo la tabla','Elimina la tabla y todos los objetos dependientes','Elimina las filas pero mantiene la estructura','Pide confirmación antes de eliminar'], ans:1, exp:'CASCADE elimina la tabla y todos los objetos que dependan de ella (vistas, constraints de FK, etc.).' },
+  { id:49, cat:'ddl', topic:'DROP TABLE', q:'¿Qué ocurre si intentas DROP TABLE sobre una tabla que tiene objetos dependientes sin usar CASCADE?', opts:['Se elimina igualmente','Se produce un error','Solo se eliminan los dependientes','La tabla queda vacía'], ans:1, exp:'PostgreSQL produce un error indicando que existen objetos dependientes. Debes usar CASCADE o eliminarlos manualmente.' },
+  { id:50, cat:'ddl', topic:'Restricciones', q:'¿Qué restricción impide que una columna almacene valores NULL?', opts:['DEFAULT','UNIQUE','NOT NULL','CHECK'], ans:2, exp:'NOT NULL impide que la columna acepte valores nulos.' },
+  // Más preguntas
+  { id:51, cat:'select', topic:'SELECT', q:'¿Qué devuelve SELECT 1 + 1 en PostgreSQL?', opts:['Error','2','NULL','Una tabla con una fila'], ans:1, exp:'PostgreSQL puede evaluar expresiones sin necesidad de FROM. SELECT 1+1 devuelve 2.' },
+  { id:52, cat:'where', topic:'WHERE', q:'¿Cuál es la diferencia entre <> y !=?', opts:['<> es estándar SQL, != no','!= es estándar SQL, <> no','Son sinónimos, ambos significan "distinto de"','<> compara cadenas, != compara números'], ans:2, exp:'Ambos operadores (<> y !=) significan "distinto de" en PostgreSQL y son completamente intercambiables.' },
+  { id:53, cat:'joins', topic:'INNER JOIN', q:'¿Se puede simplificar ON a.id = b.id usando USING cuando las columnas se llaman igual?', opts:['No, siempre hay que usar ON','Sí, USING (id) es equivalente cuando la columna tiene el mismo nombre en ambas tablas','Solo con LEFT JOIN','Solo con NATURAL JOIN'], ans:1, exp:'USING (columna) es una forma simplificada de ON tabla1.columna = tabla2.columna cuando el nombre es igual.' },
+  { id:54, cat:'group', topic:'GROUP BY', q:'¿Cuál es el resultado de COUNT(*) frente a COUNT(columna)?', opts:['Son idénticos','COUNT(*) cuenta todas las filas incluyendo NULL; COUNT(columna) ignora los NULL de esa columna','COUNT(*) es más lento','COUNT(columna) cuenta filas duplicadas'], ans:1, exp:'COUNT(*) cuenta todas las filas. COUNT(col) cuenta solo las filas donde esa columna no es NULL.' },
+  { id:55, cat:'sets', topic:'UNION', q:'¿Puedes usar ORDER BY dentro de una subconsulta de UNION?', opts:['Sí, en cualquier subconsulta','No, ORDER BY solo se puede aplicar al resultado final, después de todas las subconsultas','Solo en la primera subconsulta','Solo en la última subconsulta'], ans:1, exp:'ORDER BY solo aplica al conjunto de resultados final y debe colocarse después de la última sentencia SELECT del UNION.' },
+  { id:56, cat:'ddl', topic:'DATA TYPES', q:'¿Qué tipo usar para almacenar una dirección IP o un identificador único universal?', opts:['VARCHAR(50)','INTEGER','UUID','TEXT'], ans:2, exp:'UUID es un tipo de dato de 128 bits diseñado para identificadores únicos universales.' },
+  { id:57, cat:'orderby', topic:'FETCH', q:'¿Cuál es la sintaxis correcta para obtener las 5 siguientes filas después de saltar la primera?', opts:['LIMIT 5 OFFSET 1','OFFSET 1 ROW FETCH NEXT 5 ROWS ONLY','FETCH 5 OFFSET 1','SKIP 1 TAKE 5'], ans:1, exp:'La sintaxis FETCH usa: OFFSET n ROWS (o ROW) FETCH NEXT/FIRST n ROWS (o ROW) ONLY.' },
+  { id:58, cat:'joins', topic:'FULL OUTER JOIN', q:'¿Cómo puedes obtener solo los registros sin coincidencia usando FULL OUTER JOIN?', opts:['Usando DISTINCT','Añadiendo WHERE tabla.id IS NULL en la tabla sin coincidencia','No es posible','Usando EXCEPT'], ans:1, exp:'Filtrando con WHERE columa_tabla_A IS NULL o WHERE columna_tabla_B IS NULL obtienes solo los no coincidentes de cada lado.' },
+  { id:59, cat:'ddl', topic:'Restricciones', q:'¿Qué hace la restricción CHECK?', opts:['Verifica que el valor exista en otra tabla','Impone que el valor cumpla una expresión booleana','Garantiza unicidad','Evita valores nulos'], ans:1, exp:'CHECK valida que el valor de una columna cumpla una condición: por ejemplo CHECK (precio >= 0).' },
+  { id:60, cat:'group', topic:'HAVING', q:'¿Cuál es el orden correcto de cláusulas en una consulta completa?', opts:['SELECT FROM WHERE GROUP BY HAVING ORDER BY','FROM SELECT WHERE GROUP BY HAVING ORDER BY','SELECT FROM GROUP BY WHERE HAVING ORDER BY','FROM WHERE GROUP BY HAVING SELECT ORDER BY'], ans:0, exp:'La sintaxis es: SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... La evaluación interna es diferente.' },
+];
+
+let testFilter = 'all';
+let answers = {};
+let correctCount = 0;
+let wrongCount = 0;
+
+function setTestFilter(f) {
+  testFilter = f;
+  document.querySelectorAll('#test-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  const btns = document.querySelectorAll('#test-filters .filter-btn');
+  const map = {all:0,select:1,orderby:2,where:3,joins:4,sets:5,group:6,ddl:7};
+  btns[map[f]].classList.add('active');
+  renderTest();
+  showSection('test');
+}
+
+function renderTest() {
+  const filtered = testFilter === 'all' ? QUESTIONS : QUESTIONS.filter(q => q.cat === testFilter);
+  const container = document.getElementById('test-questions');
+  container.innerHTML = '';
+  filtered.forEach((q, idx) => {
+    const div = document.createElement('div');
+    div.className = 'question-block';
+    div.id = 'q-' + q.id;
+    const answered = answers[q.id] !== undefined;
+    const userAns = answers[q.id];
+    div.innerHTML = `
+      <div class="question-header">
+        <span class="question-num">Pregunta ${idx + 1} de ${filtered.length}</span>
+        <span class="question-cat">${q.topic}</span>
+      </div>
+      <div class="question-text">${q.q}</div>
+      <div id="opts-${q.id}">
+        ${q.opts.map((opt, i) => `
+          <div class="option ${answered ? 'disabled' : ''} ${answered && i === q.ans ? 'correct' : ''} ${answered && i === userAns && i !== q.ans ? 'incorrect' : ''} ${answered && i === userAns && i === q.ans ? 'correct' : ''}"
+            onclick="${answered ? '' : `selectAnswer(${q.id}, ${i})`}">
+            <div class="option-letter">${'ABCD'[i]}</div>
+            <span style="font-size:0.9rem">${opt}</span>
+          </div>`).join('')}
+      </div>
+      <div class="explanation ${answered ? 'visible' : ''}" id="exp-${q.id}">
+        ${answered ? (userAns === q.ans ? '✅ ' : '❌ ') + q.exp : q.exp}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  updateTestScore();
+}
+
+function selectAnswer(qid, optIdx) {
+  const q = QUESTIONS.find(x => x.id === qid);
+  if (!q || answers[qid] !== undefined) return;
+  answers[qid] = optIdx;
+  if (optIdx === q.ans) correctCount++; else wrongCount++;
+  renderTest();
+  updateTestScore();
+}
+
+function updateTestScore() {
+  document.getElementById('test-correct').textContent = correctCount;
+  document.getElementById('test-wrong').textContent = wrongCount;
+  const total = correctCount + wrongCount;
+  document.getElementById('test-pct').textContent = total > 0 ? Math.round(correctCount/total*100) + '%' : '—';
+  updateGlobalProgress();
+}
+
+function resetTest() {
+  answers = {}; correctCount = 0; wrongCount = 0;
+  renderTest();
+}
+
+// ==================== EDITOR EXERCISES ====================
+const EXERCISES = [
+  // CREATE TABLE
+  { id:1, cat:'CREATE TABLE', title:'Tabla de empleados simple', desc:'Crea una tabla llamada <code>empleados</code> con las siguientes columnas:<br>• <code>empleado_id</code>: entero, clave primaria autoincremental<br>• <code>nombre</code>: texto variable máximo 100 caracteres, no nulo<br>• <code>apellido</code>: texto variable máximo 100 caracteres, no nulo<br>• <code>email</code>: texto variable máximo 255 caracteres, único', hint:'Usa INTEGER GENERATED ALWAYS AS IDENTITY para la clave primaria autoincremental. Aplica PRIMARY KEY, NOT NULL y UNIQUE donde corresponda.', solution:`CREATE TABLE empleados (
+  empleado_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE
+);`, keywords:['create','table','empleados','integer','primary','key','varchar','not null','unique'], schema:null },
+
+  { id:2, cat:'CREATE TABLE', title:'Tabla de departamentos', desc:'Crea una tabla <code>departamentos</code> con:<br>• <code>dept_id</code>: SERIAL (entero autoincremental), clave primaria<br>• <code>nombre_dept</code>: VARCHAR(100), no nulo, único<br>• <code>presupuesto</code>: NUMERIC(12,2), con valor por defecto 0', hint:'Recuerda que SERIAL es equivalente a INTEGER con secuencia automática. Para el valor por defecto usa DEFAULT.', solution:`CREATE TABLE departamentos (
+  dept_id SERIAL PRIMARY KEY,
+  nombre_dept VARCHAR(100) NOT NULL UNIQUE,
+  presupuesto NUMERIC(12,2) DEFAULT 0
+);`, keywords:['create','table','departamentos','serial','primary','key','varchar','not null','unique','numeric','default'], schema:null },
+
+  { id:3, cat:'CREATE TABLE', title:'Tabla con clave foránea', desc:'Crea una tabla <code>empleados2</code> que referencie a la tabla <code>departamentos</code>:<br>• <code>empleado_id</code>: clave primaria autoincremental<br>• <code>nombre</code>: VARCHAR(100) no nulo<br>• <code>dept_id</code>: entero, clave foránea que referencia a <code>departamentos(dept_id)</code>', hint:'Usa REFERENCES para crear la clave foránea: dept_id INT REFERENCES departamentos(dept_id)', solution:`CREATE TABLE empleados2 (
+  empleado_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  dept_id INTEGER REFERENCES departamentos(dept_id)
+);`, keywords:['create','table','empleados','integer','primary','key','varchar','not null','references','departamentos'], schema:'-- Asume que existe:\nCREATE TABLE departamentos (\n  dept_id SERIAL PRIMARY KEY,\n  nombre_dept VARCHAR(100)\n);' },
+
+  { id:4, cat:'CREATE TABLE', title:'Tabla con CHECK constraint', desc:'Crea una tabla <code>productos</code> con:<br>• <code>producto_id</code>: clave primaria autoincremental<br>• <code>nombre</code>: VARCHAR(200) no nulo<br>• <code>precio</code>: NUMERIC(10,2) con restricción CHECK que el precio sea mayor o igual a 0<br>• <code>stock</code>: INTEGER con CHECK que sea mayor o igual a 0 y valor por defecto 0', hint:'Para CHECK en la columna: precio NUMERIC(10,2) CHECK (precio >= 0)', solution:`CREATE TABLE productos (
+  producto_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre VARCHAR(200) NOT NULL,
+  precio NUMERIC(10,2) CHECK (precio >= 0),
+  stock INTEGER DEFAULT 0 CHECK (stock >= 0)
+);`, keywords:['create','table','productos','integer','primary','key','varchar','not null','numeric','check','default'], schema:null },
+
+  { id:5, cat:'CREATE TABLE', title:'Tabla con clave primaria compuesta', desc:'Crea una tabla <code>reservas</code> que use clave primaria compuesta:<br>• <code>sala_id</code>: INTEGER<br>• <code>hora_inicio</code>: TIMESTAMP<br>• <code>hora_fin</code>: TIMESTAMP<br>• La clave primaria es la combinación de <code>sala_id</code> y <code>hora_inicio</code><br>• Añade un CHECK que asegure que <code>hora_fin</code> sea mayor que <code>hora_inicio</code>', hint:'Las restricciones a nivel de tabla se ponen después de las columnas. Usa CONSTRAINT nombre PRIMARY KEY (col1, col2) y CONSTRAINT nombre CHECK (condición).', solution:`CREATE TABLE reservas (
+  sala_id INTEGER,
+  hora_inicio TIMESTAMP,
+  hora_fin TIMESTAMP,
+  CONSTRAINT pk_reservas PRIMARY KEY (sala_id, hora_inicio),
+  CONSTRAINT chk_horas CHECK (hora_fin > hora_inicio)
+);`, keywords:['create','table','reservas','integer','timestamp','primary','key','sala_id','hora_inicio','check','hora_fin'], schema:null },
+
+  // INSERT
+  { id:6, cat:'INSERT', title:'INSERT básico', desc:'Inserta un nuevo registro en la tabla <code>empleados</code>:<br>• nombre: \'María\'<br>• apellido: \'García\'<br>• email: \'maria.garcia@empresa.com\'<br>(No incluyas empleado_id porque es autoincremental)', hint:'La sintaxis es: INSERT INTO tabla (col1, col2) VALUES (val1, val2);', solution:`INSERT INTO empleados (nombre, apellido, email)
+VALUES ('María', 'García', 'maria.garcia@empresa.com');`, keywords:['insert','into','empleados','values','maría','garcía'], schema:'CREATE TABLE empleados (\n  empleado_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  nombre VARCHAR(100) NOT NULL,\n  apellido VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE\n);' },
+
+  { id:7, cat:'INSERT', title:'INSERT múltiple', desc:'Inserta tres departamentos en la tabla <code>departamentos</code> en una sola sentencia:<br>• (\'Ventas\', 50000)<br>• (\'Marketing\', 35000)<br>• (\'RRHH\', 25000)<br>Las columnas son: nombre_dept, presupuesto', hint:'Puedes insertar múltiples filas separando los VALUES con comas: VALUES (a1,b1), (a2,b2), (a3,b3)', solution:`INSERT INTO departamentos (nombre_dept, presupuesto)
+VALUES
+  ('Ventas', 50000),
+  ('Marketing', 35000),
+  ('RRHH', 25000);`, keywords:['insert','into','departamentos','values','ventas','marketing'], schema:'CREATE TABLE departamentos (\n  dept_id SERIAL PRIMARY KEY,\n  nombre_dept VARCHAR(100) NOT NULL UNIQUE,\n  presupuesto NUMERIC(12,2) DEFAULT 0\n);' },
+
+  { id:8, cat:'INSERT', title:'INSERT con RETURNING', desc:'Inserta un nuevo producto en la tabla <code>productos</code> con nombre=\'Laptop\', precio=999.99 y que devuelva el registro insertado completo usando RETURNING.', hint:'Añade RETURNING * al final del INSERT para ver las filas insertadas.', solution:`INSERT INTO productos (nombre, precio)
+VALUES ('Laptop', 999.99)
+RETURNING *;`, keywords:['insert','into','productos','values','laptop','999','returning'], schema:'CREATE TABLE productos (\n  producto_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  nombre VARCHAR(200) NOT NULL,\n  precio NUMERIC(10,2) CHECK (precio >= 0),\n  stock INTEGER DEFAULT 0\n);' },
+
+  // ALTER TABLE
+  { id:9, cat:'ALTER TABLE', title:'Añadir una columna', desc:'Modifica la tabla <code>empleados</code> para añadir una columna <code>telefono</code> de tipo VARCHAR(20), que permita valores nulos.', hint:'Usa ALTER TABLE ... ADD COLUMN nombre_columna tipo', solution:`ALTER TABLE empleados ADD COLUMN telefono VARCHAR(20);`, keywords:['alter','table','empleados','add','column','telefono','varchar'], schema:'CREATE TABLE empleados (\n  empleado_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n  nombre VARCHAR(100) NOT NULL,\n  apellido VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE\n);' },
+
+  { id:10, cat:'ALTER TABLE', title:'Eliminar una columna', desc:'Elimina la columna <code>telefono</code> de la tabla <code>empleados</code>.', hint:'Usa ALTER TABLE ... DROP COLUMN nombre_columna', solution:`ALTER TABLE empleados DROP COLUMN telefono;`, keywords:['alter','table','empleados','drop','column','telefono'], schema:'-- empleados tiene la columna telefono añadida anteriormente' },
+
+  { id:11, cat:'ALTER TABLE', title:'Renombrar una columna', desc:'Renombra la columna <code>nombre</code> a <code>primer_nombre</code> en la tabla <code>empleados</code>.', hint:'Usa RENAME COLUMN ... TO ...', solution:`ALTER TABLE empleados RENAME COLUMN nombre TO primer_nombre;`, keywords:['alter','table','empleados','rename','column','nombre','primer_nombre'], schema:null },
+
+  { id:12, cat:'ALTER TABLE', title:'Añadir valor por defecto', desc:'Establece un valor por defecto de \'Activo\' para la columna <code>estado</code> de la tabla <code>empleados</code> (asume que la columna ya existe como VARCHAR(20)).', hint:'Usa ALTER COLUMN ... SET DEFAULT valor', solution:`ALTER TABLE empleados ALTER COLUMN estado SET DEFAULT 'Activo';`, keywords:['alter','table','empleados','alter','column','estado','set','default'], schema:'-- empleados tiene columna estado VARCHAR(20)' },
+
+  { id:13, cat:'ALTER TABLE', title:'Añadir restricción UNIQUE', desc:'Añade una restricción UNIQUE llamada <code>uq_empleado_email</code> sobre la columna <code>email</code> de la tabla <code>empleados</code>.', hint:'Usa ADD CONSTRAINT nombre UNIQUE (columna)', solution:`ALTER TABLE empleados ADD CONSTRAINT uq_empleado_email UNIQUE (email);`, keywords:['alter','table','empleados','add','constraint','unique','email'], schema:null },
+
+  { id:14, cat:'ALTER TABLE', title:'Añadir CHECK', desc:'Añade una restricción CHECK a la tabla <code>productos</code> que asegure que el precio sea menor de 99999.99.', hint:'Usa ADD CHECK (condición) o ADD CONSTRAINT nombre CHECK (condición)', solution:`ALTER TABLE productos ADD CHECK (precio < 99999.99);`, keywords:['alter','table','productos','add','check','precio'], schema:null },
+
+  { id:15, cat:'ALTER TABLE', title:'Renombrar tabla', desc:'Renombra la tabla <code>empleados</code> a <code>trabajadores</code>.', hint:'Usa RENAME TO nuevo_nombre', solution:`ALTER TABLE empleados RENAME TO trabajadores;`, keywords:['alter','table','empleados','rename','to','trabajadores'], schema:null },
+
+  // DROP TABLE
+  { id:16, cat:'DROP TABLE', title:'DROP TABLE básico', desc:'Elimina la tabla <code>temporal_datos</code>. Si no existe, no debe producirse ningún error.', hint:'Usa IF EXISTS para evitar el error si la tabla no existe.', solution:`DROP TABLE IF EXISTS temporal_datos;`, keywords:['drop','table','if','exists','temporal_datos'], schema:null },
+
+  { id:17, cat:'DROP TABLE', title:'DROP TABLE con CASCADE', desc:'Elimina la tabla <code>categorias</code> junto con todos los objetos que dependan de ella (por ejemplo, claves foráneas en otras tablas).', hint:'Usa CASCADE para eliminar también los objetos dependientes.', solution:`DROP TABLE categorias CASCADE;`, keywords:['drop','table','categorias','cascade'], schema:null },
+
+  { id:18, cat:'DROP TABLE', title:'DROP TABLE múltiple', desc:'Elimina las tablas <code>tabla_a</code> y <code>tabla_b</code> en una sola sentencia, solo si existen.', hint:'Puedes listar varias tablas separadas por comas en DROP TABLE.', solution:`DROP TABLE IF EXISTS tabla_a, tabla_b;`, keywords:['drop','table','if','exists','tabla_a','tabla_b'], schema:null },
+
+  // UPDATE
+  { id:19, cat:'UPDATE', title:'UPDATE básico', desc:'Actualiza el email del empleado con <code>empleado_id = 1</code> en la tabla <code>empleados</code>. El nuevo email debe ser <code>nuevo@email.com</code>.', hint:'Usa UPDATE tabla SET columna = valor WHERE condición', solution:`UPDATE empleados
+SET email = 'nuevo@email.com'
+WHERE empleado_id = 1;`, keywords:['update','empleados','set','email','where','empleado_id'], schema:'CREATE TABLE empleados (\n  empleado_id INTEGER PRIMARY KEY,\n  nombre VARCHAR(100),\n  email VARCHAR(255)\n);' },
+
+  { id:20, cat:'UPDATE', title:'UPDATE múltiples columnas', desc:'Actualiza el nombre a \'Juan\' y el apellido a \'López\' del empleado con <code>empleado_id = 5</code>.', hint:'Para actualizar varias columnas: SET col1 = val1, col2 = val2', solution:`UPDATE empleados
+SET nombre = 'Juan', apellido = 'López'
+WHERE empleado_id = 5;`, keywords:['update','empleados','set','nombre','apellido','where','empleado_id'], schema:null },
+
+  // DELETE
+  { id:21, cat:'DELETE', title:'DELETE con condición', desc:'Elimina todos los empleados de la tabla <code>empleados</code> que tengan <code>dept_id = 3</code>.', hint:'Usa DELETE FROM tabla WHERE condición', solution:`DELETE FROM empleados
+WHERE dept_id = 3;`, keywords:['delete','from','empleados','where','dept_id'], schema:null },
+
+  { id:22, cat:'DELETE', title:'DELETE todas las filas', desc:'Elimina todas las filas de la tabla <code>temporal</code> (sin eliminar la estructura de la tabla).', hint:'DELETE FROM sin WHERE elimina todas las filas. También existe TRUNCATE para esto.', solution:`DELETE FROM temporal;`, keywords:['delete','from','temporal'], schema:null },
+
+  // Más CREATE TABLE avanzados
+  { id:23, cat:'CREATE TABLE', title:'Tabla con UUID como PK', desc:'Crea una tabla <code>sesiones</code> con:<br>• <code>session_id</code>: UUID, clave primaria, valor por defecto gen_random_uuid()<br>• <code>usuario</code>: VARCHAR(50) no nulo<br>• <code>creada_en</code>: TIMESTAMP con zona horaria, por defecto CURRENT_TIMESTAMP', hint:'El tipo UUID con gen_random_uuid() requiere la extensión pgcrypto.', solution:`CREATE TABLE sesiones (
+  session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario VARCHAR(50) NOT NULL,
+  creada_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);`, keywords:['create','table','sesiones','uuid','primary','key','gen_random_uuid','varchar','not null','timestamp'], schema:null },
+
+  { id:24, cat:'CREATE TABLE', title:'Tabla con columna BOOLEAN', desc:'Crea una tabla <code>tareas</code> con:<br>• <code>tarea_id</code>: clave primaria autoincremental<br>• <code>descripcion</code>: TEXT no nulo<br>• <code>completada</code>: BOOLEAN con valor por defecto FALSE', hint:'Usa BOOLEAN DEFAULT FALSE para la columna booleana.', solution:`CREATE TABLE tareas (
+  tarea_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  descripcion TEXT NOT NULL,
+  completada BOOLEAN DEFAULT FALSE
+);`, keywords:['create','table','tareas','integer','primary','key','text','not null','boolean','default','false'], schema:null },
+
+  { id:25, cat:'CREATE TABLE', title:'Tabla con JSONB', desc:'Crea una tabla <code>configuraciones</code> con:<br>• <code>config_id</code>: clave primaria autoincremental<br>• <code>datos</code>: JSONB no nulo<br>• <code>creado_en</code>: TIMESTAMP con valor por defecto CURRENT_TIMESTAMP', hint:'JSONB es el tipo JSON binario de PostgreSQL, más eficiente para consultas.', solution:`CREATE TABLE configuraciones (
+  config_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  datos JSONB NOT NULL,
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`, keywords:['create','table','configuraciones','integer','primary','key','jsonb','not null','timestamp','default'], schema:null },
+
+  { id:26, cat:'ALTER TABLE', title:'Añadir NOT NULL', desc:'Añade la restricción NOT NULL a la columna <code>nombre</code> de la tabla <code>productos</code>.', hint:'Usa ALTER COLUMN nombre SET NOT NULL', solution:`ALTER TABLE productos ALTER COLUMN nombre SET NOT NULL;`, keywords:['alter','table','productos','alter','column','nombre','set','not null'], schema:null },
+
+  { id:27, cat:'ALTER TABLE', title:'Eliminar valor por defecto', desc:'Elimina el valor por defecto de la columna <code>estado</code> de la tabla <code>empleados</code>.', hint:'Usa DROP DEFAULT para eliminar el valor por defecto de una columna.', solution:`ALTER TABLE empleados ALTER COLUMN estado DROP DEFAULT;`, keywords:['alter','table','empleados','alter','column','estado','drop','default'], schema:null },
+
+  { id:28, cat:'INSERT', title:'INSERT con SELECT', desc:'Copia todos los registros de la tabla <code>clientes_vip</code> a la tabla <code>clientes_archivo</code>. Ambas tablas tienen las mismas columnas.', hint:'Puedes usar INSERT INTO ... SELECT ... FROM ... para insertar datos de otra tabla.', solution:`INSERT INTO clientes_archivo
+SELECT * FROM clientes_vip;`, keywords:['insert','into','clientes_archivo','select','from','clientes_vip'], schema:'-- Ambas tablas tienen la misma estructura' },
+
+  { id:29, cat:'UPDATE', title:'UPDATE con subconsulta', desc:'Actualiza el campo <code>activo</code> a FALSE para todos los empleados cuyo <code>dept_id</code> aparezca en la tabla <code>departamentos_cerrados</code>.', hint:'Usa WHERE dept_id IN (SELECT dept_id FROM ...))', solution:`UPDATE empleados
+SET activo = FALSE
+WHERE dept_id IN (SELECT dept_id FROM departamentos_cerrados);`, keywords:['update','empleados','set','activo','false','where','dept_id','in','select','from','departamentos_cerrados'], schema:null },
+
+  { id:30, cat:'DELETE', title:'DELETE con subconsulta', desc:'Elimina de la tabla <code>pedidos</code> todos los registros cuyo <code>cliente_id</code> no aparezca en la tabla <code>clientes</code> (clientes huérfanos).', hint:'Usa WHERE columna NOT IN (SELECT ...) o NOT EXISTS', solution:`DELETE FROM pedidos
+WHERE cliente_id NOT IN (SELECT cliente_id FROM clientes);`, keywords:['delete','from','pedidos','where','cliente_id','not','in','select','from','clientes'], schema:null },
+];
+
+let currentEx = 0;
+let exResults = {};
+let editorFilter = 'all';
+
+function renderEditor() {
+  renderTopicButtons();
+  loadExercise(currentEx);
+}
+
+function getFilteredExercises() {
+  if (editorFilter === 'all') return EXERCISES;
+  return EXERCISES.filter(e => e.cat === editorFilter);
+}
+
+function renderTopicButtons() {
+  const cats = ['all','CREATE TABLE','ALTER TABLE','DROP TABLE','INSERT','UPDATE','DELETE'];
+  const labels = ['Todos','CREATE TABLE','ALTER TABLE','DROP TABLE','INSERT','UPDATE','DELETE'];
+  const container = document.getElementById('editor-topics');
+  container.innerHTML = cats.map((c,i) => `<button class="topic-btn ${editorFilter===c?'active':''}" onclick="setEditorFilter('${c}')">${labels[i]}</button>`).join('');
+}
+
+function setEditorFilter(f) {
+  editorFilter = f;
+  currentEx = 0;
+  renderTopicButtons();
+  loadExercise(0);
+}
+
+function loadExercise(idx) {
+  const exs = getFilteredExercises();
+  if (!exs.length) return;
+  if (idx < 0) idx = 0;
+  if (idx >= exs.length) idx = exs.length - 1;
+  currentEx = idx;
+  const ex = exs[idx];
+  document.getElementById('ex-cat-label').textContent = ex.cat;
+  document.getElementById('ex-title').textContent = ex.title;
+  document.getElementById('ex-desc').innerHTML = ex.desc;
+  document.getElementById('ex-counter').textContent = `${idx+1} / ${exs.length}`;
+  const hintBox = document.getElementById('hint-box');
+  hintBox.textContent = ex.hint;
+  hintBox.classList.remove('visible');
+  const expBox = document.getElementById('expected-box');
+  expBox.classList.remove('visible');
+  document.getElementById('expected-content').textContent = ex.solution;
+  const schemaEl = document.getElementById('ex-schema');
+  if (ex.schema) {
+    schemaEl.style.display = 'block';
+    document.getElementById('ex-schema-content').textContent = ex.schema;
+  } else {
+    schemaEl.style.display = 'none';
+  }
+  document.getElementById('sql-input').value = '';
+  const res = document.getElementById('result-box');
+  res.className = 'result-box';
+  res.innerHTML = '';
+  renderDots('ex-dots', exs.length, idx, exResults, i => { currentEx = i; loadExercise(i); });
+}
+
+function renderDots(containerId, total, current, results, clickFn) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const max = Math.min(total, 20);
+  for (let i = 0; i < max; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'ex-dot' + (i === current ? ' active' : '') + (results[i] ? ' done' : '');
+    dot.onclick = () => clickFn(i);
+    container.appendChild(dot);
+  }
+}
+
+function toggleHint() {
+  document.getElementById('hint-box').classList.toggle('visible');
+}
+function toggleExpected() {
+  document.getElementById('expected-box').classList.toggle('visible');
+}
+function prevEx() { loadExercise(currentEx - 1); }
+function nextEx() { loadExercise(currentEx + 1); }
+function clearSQL() { document.getElementById('sql-input').value = ''; }
+
+function normalizeSQL(sql) {
+  return sql.toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/integer/g, 'int')
+    .replace(/int generated always as identity/g, 'serial')
+    .replace(/\bserial\b/g, 'serial')
+    .replace(/`/g, '')
+    .replace(/;$/, '')
+    .trim();
+}
+
+function checkSQL() {
+  const exs = getFilteredExercises();
+  const ex = exs[currentEx];
+  const userInput = document.getElementById('sql-input').value.trim();
+  const resultBox = document.getElementById('result-box');
+  resultBox.className = 'result-box visible';
+
+  if (!userInput) {
+    resultBox.className = 'result-box result-warn visible';
+    resultBox.innerHTML = '⚠️ Escribe una sentencia SQL antes de comprobar.';
+    return;
+  }
+
+  const userNorm = normalizeSQL(userInput);
+  const missing = ex.keywords.filter(kw => !userNorm.includes(kw.toLowerCase()));
+  const score = Math.round((1 - missing.length / ex.keywords.length) * 100);
+
+  if (score >= 80) {
+    exResults[currentEx] = true;
+    resultBox.className = 'result-box result-ok visible';
+    resultBox.innerHTML = `✅ <strong>¡Muy bien!</strong> Tu sentencia incluye todos los elementos clave.<br><small style="margin-top:0.25rem;display:block">Puntuación: ${score}%</small>`;
+    renderDots('ex-dots', exs.length, currentEx, exResults, i => { currentEx = i; loadExercise(i); });
+    updateGlobalProgress();
+  } else if (score >= 50) {
+    resultBox.className = 'result-box result-warn visible';
+    resultBox.innerHTML = `⚠️ <strong>Casi...</strong> Puntuación: ${score}%<br><small>Faltan elementos: <code>${missing.join(', ')}</code></small><br><small>Revisa la pista o la solución.</small>`;
+  } else {
+    resultBox.className = 'result-box result-err visible';
+    resultBox.innerHTML = `❌ <strong>Incorrecto.</strong> Puntuación: ${score}%<br><small>Faltan elementos importantes: <code>${missing.slice(0,5).join(', ')}</code></small><br><small>Usa la pista para guiarte.</small>`;
+  }
+}
+
+// ==================== QUERY EXERCISES ====================
+const QUERY_EXERCISES = [
+  // SELECT básico
+  { id:1, cat:'SELECT básico', title:'Todos los clientes', desc:'Selecciona el <code>first_name</code>, <code>last_name</code> y <code>email</code> de todos los clientes de la tabla <code>customer</code>.', hint:'Usa SELECT con las columnas específicas. No uses SELECT *.', solution:`SELECT first_name, last_name, email
+FROM customer;`, keywords:['select','first_name','last_name','email','from','customer'] },
+
+  { id:2, cat:'SELECT básico', title:'Nombre completo con alias', desc:'Selecciona el nombre completo de cada cliente concatenando <code>first_name</code> y <code>last_name</code> con un espacio entre ellos. Asigna el alias <code>nombre_completo</code> a esa expresión. Incluye también el email.', hint:'Usa el operador || para concatenar. No olvides poner el espacio: first_name || \' \' || last_name', solution:`SELECT first_name || ' ' || last_name AS nombre_completo, email
+FROM customer;`, keywords:['select','first_name','last_name','nombre_completo','email','from','customer','||'] },
+
+  { id:3, cat:'SELECT básico', title:'Tarifas distintas de alquiler', desc:'Obtén los distintos valores de <code>rental_rate</code> de la tabla <code>film</code>, ordenados de menor a mayor.', hint:'Usa SELECT DISTINCT para eliminar duplicados.', solution:`SELECT DISTINCT rental_rate
+FROM film
+ORDER BY rental_rate;`, keywords:['select','distinct','rental_rate','from','film','order','by'] },
+
+  { id:4, cat:'SELECT básico', title:'Primeras 10 películas', desc:'Obtén el <code>film_id</code> y <code>title</code> de las primeras 10 películas ordenadas alfabéticamente por título.', hint:'Usa ORDER BY y FETCH FIRST 10 ROWS ONLY (o LIMIT 10).', solution:`SELECT film_id, title
+FROM film
+ORDER BY title
+FETCH FIRST 10 ROWS ONLY;`, keywords:['select','film_id','title','from','film','order','by'] },
+
+  // WHERE
+  { id:5, cat:'WHERE', title:'Clientes con nombre Jamie', desc:'Obtén el nombre y apellido de los clientes cuyo <code>first_name</code> sea exactamente \'Jamie\'.', hint:'Usa WHERE con el operador de igualdad.', solution:`SELECT first_name, last_name
+FROM customer
+WHERE first_name = 'Jamie';`, keywords:['select','first_name','last_name','from','customer','where','jamie'] },
+
+  { id:6, cat:'WHERE', title:'Películas con tarifa entre 2 y 4', desc:'Obtén el <code>title</code> y <code>rental_rate</code> de las películas cuya tarifa de alquiler esté entre 2.00 y 4.00 (inclusive), ordenadas por tarifa.', hint:'Usa BETWEEN para el rango.', solution:`SELECT title, rental_rate
+FROM film
+WHERE rental_rate BETWEEN 2.00 AND 4.00
+ORDER BY rental_rate;`, keywords:['select','title','rental_rate','from','film','where','between','order'] },
+
+  { id:7, cat:'WHERE', title:'Clientes cuyo nombre empieza por A', desc:'Obtén el nombre y apellido de los clientes cuyo <code>first_name</code> empiece por la letra \'A\', ordenados alfabéticamente.', hint:'Usa LIKE \'A%\' para buscar nombres que empiezan por A.', solution:`SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'A%'
+ORDER BY first_name;`, keywords:['select','first_name','last_name','from','customer','where','like','a%','order'] },
+
+  { id:8, cat:'WHERE', title:'Películas con rating PG o PG-13', desc:'Obtén el <code>title</code> y <code>rating</code> de las películas cuya clasificación sea \'PG\' o \'PG-13\'.', hint:'Puedes usar IN (\'PG\', \'PG-13\') o dos condiciones con OR.', solution:`SELECT title, rating
+FROM film
+WHERE rating IN ('PG', 'PG-13')
+ORDER BY title;`, keywords:['select','title','rating','from','film','where','in','pg'] },
+
+  // ORDER BY / LIMIT
+  { id:9, cat:'ORDER BY', title:'10 películas más largas', desc:'Obtén el <code>title</code> y <code>length</code> de las 10 películas más largas (mayor duración primero).', hint:'Ordena por length DESC y limita a 10.', solution:`SELECT title, length
+FROM film
+ORDER BY length DESC
+FETCH FIRST 10 ROWS ONLY;`, keywords:['select','title','length','from','film','order','by','desc'] },
+
+  { id:10, cat:'ORDER BY', title:'Películas por longitud de título', desc:'Selecciona el <code>title</code> y la longitud de su nombre (usando LENGTH()) con alias <code>len_titulo</code>, de la tabla <code>film</code>. Ordena por longitud descendente y muestra solo las 5 primeras.', hint:'LENGTH(title) devuelve el número de caracteres del título.', solution:`SELECT title, LENGTH(title) AS len_titulo
+FROM film
+ORDER BY len_titulo DESC
+FETCH FIRST 5 ROWS ONLY;`, keywords:['select','title','length','len_titulo','from','film','order','by','desc'] },
+
+  // JOINs
+  { id:11, cat:'JOINs', title:'Clientes con su dirección', desc:'Obtén el <code>first_name</code>, <code>last_name</code> del cliente y el campo <code>address</code> de la tabla <code>address</code>. Une ambas tablas por <code>address_id</code>.', hint:'Usa INNER JOIN entre customer y address.', solution:`SELECT c.first_name, c.last_name, a.address
+FROM customer AS c
+INNER JOIN address AS a ON c.address_id = a.address_id;`, keywords:['select','first_name','last_name','address','from','customer','inner','join','address_id'] },
+
+  { id:12, cat:'JOINs', title:'Películas y su inventario', desc:'Obtén el <code>title</code> de cada película y cuántas copias tiene en inventario (<code>COUNT(*)</code> con alias <code>num_copias</code>). Usa las tablas <code>film</code> e <code>inventory</code>.', hint:'Haz un LEFT JOIN para incluir películas sin copias. Agrupa por film.film_id.', solution:`SELECT f.title, COUNT(i.inventory_id) AS num_copias
+FROM film AS f
+LEFT JOIN inventory AS i ON f.film_id = i.film_id
+GROUP BY f.film_id, f.title
+ORDER BY num_copias DESC;`, keywords:['select','title','count','num_copias','from','film','left','join','inventory','group','by'] },
+
+  { id:13, cat:'JOINs', title:'Clientes y su ciudad', desc:'Obtén el nombre completo del cliente (first_name + last_name) y el nombre de su ciudad. Necesitarás unir <code>customer</code>, <code>address</code> y <code>city</code>.', hint:'Necesitas dos INNER JOINs en cadena: customer→address→city.', solution:`SELECT c.first_name || ' ' || c.last_name AS nombre_completo, ci.city
+FROM customer AS c
+INNER JOIN address AS a ON c.address_id = a.address_id
+INNER JOIN city AS ci ON a.city_id = ci.city_id
+ORDER BY ci.city;`, keywords:['select','first_name','last_name','city','from','customer','inner','join','address','city_id'] },
+
+  { id:14, cat:'JOINs', title:'Pagos con nombre de cliente', desc:'Obtén el <code>payment_id</code>, el nombre completo del cliente y el <code>amount</code> del pago. Une <code>payment</code> y <code>customer</code>.', hint:'INNER JOIN entre payment y customer por customer_id.', solution:`SELECT p.payment_id, c.first_name || ' ' || c.last_name AS cliente, p.amount
+FROM payment AS p
+INNER JOIN customer AS c ON p.customer_id = c.customer_id
+ORDER BY p.amount DESC;`, keywords:['select','payment_id','first_name','last_name','amount','from','payment','inner','join','customer','customer_id'] },
+
+  // GROUP BY / HAVING
+  { id:15, cat:'GROUP BY', title:'Total pagado por cliente', desc:'Calcula la suma total de pagos (<code>SUM(amount)</code>) por cada cliente (<code>customer_id</code>). Muestra el customer_id y el total con alias <code>total_pagado</code>. Ordena de mayor a menor.', hint:'Usa GROUP BY customer_id y ORDER BY total_pagado DESC.', solution:`SELECT customer_id, SUM(amount) AS total_pagado
+FROM payment
+GROUP BY customer_id
+ORDER BY total_pagado DESC;`, keywords:['select','customer_id','sum','amount','total_pagado','from','payment','group','by','order'] },
+
+  { id:16, cat:'GROUP BY', title:'Clientes con total mayor a 150', desc:'Obtén los <code>customer_id</code> con suma total de pagos superior a 150, ordenados de mayor a menor total.', hint:'Usa HAVING SUM(amount) > 150 para filtrar los grupos.', solution:`SELECT customer_id, SUM(amount) AS total
+FROM payment
+GROUP BY customer_id
+HAVING SUM(amount) > 150
+ORDER BY total DESC;`, keywords:['select','customer_id','sum','amount','from','payment','group','by','having','order'] },
+
+  { id:17, cat:'GROUP BY', title:'Número de películas por rating', desc:'Cuenta cuántas películas hay de cada <code>rating</code> en la tabla <code>film</code>. Muestra el rating y el conteo con alias <code>num_peliculas</code>, ordenado por conteo descendente.', hint:'Agrupa por rating y usa COUNT(*).', solution:`SELECT rating, COUNT(*) AS num_peliculas
+FROM film
+GROUP BY rating
+ORDER BY num_peliculas DESC;`, keywords:['select','rating','count','num_peliculas','from','film','group','by','order'] },
+
+  { id:18, cat:'GROUP BY', title:'Promedio de duración por rating', desc:'Calcula la duración media de las películas agrupadas por <code>rating</code>. Muestra solo los ratings con duración media superior a 110 minutos.', hint:'Usa AVG(length) y HAVING AVG(length) > 110.', solution:`SELECT rating, AVG(length) AS duracion_media
+FROM film
+GROUP BY rating
+HAVING AVG(length) > 110
+ORDER BY duracion_media DESC;`, keywords:['select','rating','avg','length','duracion_media','from','film','group','by','having'] },
+
+  // Conjuntos
+  { id:19, cat:'Conjuntos', title:'UNION de nombres', desc:'Obtén una lista combinada con los <code>first_name</code> de la tabla <code>customer</code> y los <code>first_name</code> de la tabla <code>staff</code>, sin duplicados, ordenada alfabéticamente.', hint:'Usa UNION (no UNION ALL) para eliminar duplicados.', solution:`SELECT first_name FROM customer
+UNION
+SELECT first_name FROM staff
+ORDER BY first_name;`, keywords:['select','first_name','from','customer','union','staff','order','by'] },
+
+  { id:20, cat:'Conjuntos', title:'UNION ALL de emails', desc:'Obtén todos los emails de <code>customer</code> y de <code>staff</code>, incluyendo duplicados si los hubiera. Ordena por email.', hint:'Usa UNION ALL para conservar duplicados.', solution:`SELECT email FROM customer
+UNION ALL
+SELECT email FROM staff
+ORDER BY email;`, keywords:['select','email','from','customer','union','all','staff','order'] },
+
+  // Avanzados
+  { id:21, cat:'Avanzado', title:'Top 5 clientes por gasto', desc:'Obtén el nombre completo del cliente y su gasto total, de los 5 clientes que más han gastado. Une <code>customer</code> y <code>payment</code>.', hint:'Agrupa por customer_id, suma amount, ordena DESC y limita a 5.', solution:`SELECT c.first_name || ' ' || c.last_name AS cliente, SUM(p.amount) AS total_gastado
+FROM customer AS c
+INNER JOIN payment AS p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY total_gastado DESC
+FETCH FIRST 5 ROWS ONLY;`, keywords:['select','first_name','last_name','sum','amount','from','customer','inner','join','payment','group','by','order','desc'] },
+
+  { id:22, cat:'Avanzado', title:'Películas nunca alquiladas', desc:'Obtén los títulos de películas que nunca han sido alquiladas. Usa <code>film</code>, <code>inventory</code> y <code>rental</code>. Pista: LEFT JOIN y WHERE IS NULL.', hint:'LEFT JOIN film→inventory→rental, filtra WHERE rental.rental_id IS NULL.', solution:`SELECT f.title
+FROM film AS f
+LEFT JOIN inventory AS i ON f.film_id = i.film_id
+LEFT JOIN rental AS r ON i.inventory_id = r.inventory_id
+WHERE r.rental_id IS NULL
+ORDER BY f.title;`, keywords:['select','title','from','film','left','join','inventory','rental','where','is','null'] },
+
+  { id:23, cat:'Avanzado', title:'Alquileres por mes', desc:'Cuenta el número de alquileres por mes (extrae el mes de <code>rental_date</code> con EXTRACT). Muestra el año, el mes y el conteo con alias <code>num_alquileres</code>.', hint:'Usa EXTRACT(YEAR FROM rental_date) y EXTRACT(MONTH FROM rental_date).', solution:`SELECT EXTRACT(YEAR FROM rental_date) AS anio,
+       EXTRACT(MONTH FROM rental_date) AS mes,
+       COUNT(*) AS num_alquileres
+FROM rental
+GROUP BY anio, mes
+ORDER BY anio, mes;`, keywords:['select','extract','year','month','rental_date','count','num_alquileres','from','rental','group','by'] },
+
+  { id:24, cat:'Avanzado', title:'Empleados y número de pagos gestionados', desc:'Obtén el nombre completo de cada empleado de la tabla <code>staff</code> y cuántos pagos ha gestionado (tabla <code>payment</code>). Ordena por número de pagos descendente.', hint:'LEFT JOIN staff→payment, agrupa por staff_id.', solution:`SELECT s.first_name || ' ' || s.last_name AS empleado,
+       COUNT(p.payment_id) AS num_pagos
+FROM staff AS s
+LEFT JOIN payment AS p ON s.staff_id = p.staff_id
+GROUP BY s.staff_id, s.first_name, s.last_name
+ORDER BY num_pagos DESC;`, keywords:['select','first_name','last_name','count','payment_id','from','staff','left','join','payment','group','by'] },
+
+  { id:25, cat:'Avanzado', title:'Duración media de alquiler por película', desc:'Calcula la duración media del alquiler en días (diferencia entre <code>return_date</code> y <code>rental_date</code>) por película. Muestra el título y la media con alias <code>media_dias</code>. Solo películas con al menos 5 alquileres.', hint:'Usa EXTRACT(EPOCH FROM return_date - rental_date)/86400 para los días. Une rental→inventory→film.', solution:`SELECT f.title,
+       AVG(EXTRACT(EPOCH FROM (r.return_date - r.rental_date))/86400) AS media_dias
+FROM rental AS r
+INNER JOIN inventory AS i ON r.inventory_id = i.inventory_id
+INNER JOIN film AS f ON i.film_id = f.film_id
+WHERE r.return_date IS NOT NULL
+GROUP BY f.film_id, f.title
+HAVING COUNT(*) >= 5
+ORDER BY media_dias DESC;`, keywords:['select','title','avg','return_date','rental_date','from','rental','inner','join','inventory','film','group','by','having'] },
+];
+
+let currentQEx = 0;
+let qResults = {};
+let queryFilter = 'all';
+
+function renderQueries() {
+  renderQueryTopicButtons();
+  loadQueryExercise(currentQEx);
+}
+
+function getFilteredQExercises() {
+  if (queryFilter === 'all') return QUERY_EXERCISES;
+  return QUERY_EXERCISES.filter(e => e.cat === queryFilter);
+}
+
+function renderQueryTopicButtons() {
+  const cats = ['all','SELECT básico','WHERE','ORDER BY','JOINs','GROUP BY','Conjuntos','Avanzado'];
+  const container = document.getElementById('query-topics');
+  container.innerHTML = cats.map(c => `<button class="topic-btn ${queryFilter===c?'active':''}" onclick="setQueryFilter('${c}')">${c==='all'?'Todos':c}</button>`).join('');
+}
+
+function setQueryFilter(f) {
+  queryFilter = f;
+  currentQEx = 0;
+  renderQueryTopicButtons();
+  loadQueryExercise(0);
+}
+
+function loadQueryExercise(idx) {
+  const exs = getFilteredQExercises();
+  if (!exs.length) return;
+  if (idx < 0) idx = 0;
+  if (idx >= exs.length) idx = exs.length - 1;
+  currentQEx = idx;
+  const ex = exs[idx];
+  document.getElementById('qex-cat-label').textContent = ex.cat;
+  document.getElementById('qex-title').textContent = ex.title;
+  document.getElementById('qex-desc').innerHTML = ex.desc;
+  document.getElementById('qex-counter').textContent = `${idx+1} / ${exs.length}`;
+  document.getElementById('qhint-box').textContent = ex.hint;
+  document.getElementById('qhint-box').classList.remove('visible');
+  document.getElementById('qexpected-box').classList.remove('visible');
+  document.getElementById('qexpected-content').textContent = ex.solution;
+  document.getElementById('qsql-input').value = '';
+  const res = document.getElementById('qresult-box');
+  res.className = 'result-box';
+  res.innerHTML = '';
+  renderDots('qex-dots', exs.length, idx, qResults, i => { currentQEx = i; loadQueryExercise(i); });
+}
+
+function toggleQHint() { document.getElementById('qhint-box').classList.toggle('visible'); }
+function toggleQExpected() { document.getElementById('qexpected-box').classList.toggle('visible'); }
+function prevQEx() { loadQueryExercise(currentQEx - 1); }
+function nextQEx() { loadQueryExercise(currentQEx + 1); }
+function clearQSQL() { document.getElementById('qsql-input').value = ''; }
+
+function checkQuery() {
+  const exs = getFilteredQExercises();
+  const ex = exs[currentQEx];
+  const userInput = document.getElementById('qsql-input').value.trim();
+  const resultBox = document.getElementById('qresult-box');
+  resultBox.className = 'result-box visible';
+
+  if (!userInput) {
+    resultBox.className = 'result-box result-warn visible';
+    resultBox.innerHTML = '⚠️ Escribe una consulta SQL antes de comprobar.';
+    return;
+  }
+
+  const userNorm = userInput.toLowerCase().replace(/\s+/g, ' ').replace(/;$/, '').trim();
+  if (!userNorm.startsWith('select')) {
+    resultBox.className = 'result-box result-err visible';
+    resultBox.innerHTML = '❌ La consulta debe comenzar con SELECT.';
+    return;
+  }
+
+  const missing = ex.keywords.filter(kw => !userNorm.includes(kw.toLowerCase()));
+  const score = Math.round((1 - missing.length / ex.keywords.length) * 100);
+
+  if (score >= 80) {
+    qResults[currentQEx] = true;
+    resultBox.className = 'result-box result-ok visible';
+    resultBox.innerHTML = `✅ <strong>¡Excelente consulta!</strong> Incluye todos los elementos clave.<br><small style="margin-top:0.25rem;display:block">Puntuación: ${score}% — Ejecuta esta consulta en tu entorno PostgreSQL para ver los resultados reales.</small>`;
+    renderDots('qex-dots', exs.length, currentQEx, qResults, i => { currentQEx = i; loadQueryExercise(i); });
+    updateGlobalProgress();
+  } else if (score >= 55) {
+    resultBox.className = 'result-box result-warn visible';
+    resultBox.innerHTML = `⚠️ <strong>Casi correcto.</strong> Puntuación: ${score}%<br><small>Elementos que podrían faltar: <code>${missing.join(', ')}</code></small>`;
+  } else {
+    resultBox.className = 'result-box result-err visible';
+    resultBox.innerHTML = `❌ <strong>Incorrecto.</strong> Puntuación: ${score}%<br><small>Revisa la pista o la solución esperada.</small>`;
+  }
+}
+
+// ==================== GLOBAL PROGRESS ====================
+function updateGlobalProgress() {
+  const testDone = Object.keys(answers).length;
+  const editorDone = Object.keys(exResults).length;
+  const queryDone = Object.keys(qResults).length;
+  const total = QUESTIONS.length + EXERCISES.length + QUERY_EXERCISES.length;
+  const done = testDone + editorDone + queryDone;
+  const pct = Math.round(done / total * 100);
+  const bar = document.getElementById('global-progress');
+  const txt = document.getElementById('global-progress-text');
+  if (bar) { bar.style.width = pct + '%'; }
+  if (txt) { txt.textContent = `${pct}% completado (${done}/${total} actividades)`; }
+}
+
+// ==================== INIT ====================
+renderTest();
+</script>
+</body>
+</html>
