@@ -30,9 +30,9 @@ cat backups/backup_total.sql | docker exec -i cbas psql -U cbas -d baseCbas
 
 ---
 
-##  Iniciar base de datos
+## 🥵 Iniciar base de datos
 
-### 🥵 Import del .sql
+### Import del .sql
 No hay mucho que explicar aquí, sólo asegúrate de que el **init_db.sql** está en el mismo directorio
 ```bash
 docker exec -i containerCbas psql -U cbas -d baseCbas < init_db.sql
